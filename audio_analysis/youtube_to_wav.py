@@ -2,20 +2,18 @@ from pytube import YouTube
 import glob
 import os.path
 
+# 먼저 실행 1번
 # 유튜브 전용 인스턴스 생성
-yt = YouTube('https://youtu.be/tWatiCnuK0U')
+par = 'https://youtu.be/tWatiCnuK0U'
+yt = YouTube(par)
+yt.streams.filter()
 
-print(yt.streams.filter(only_audio=True).all)
+yt.streams.filter().first().download()
+print('success')
 
-# 특정영상 다운로드
-yt.streams.filter(only_audio=True).first().download()
+# 그 다음 실행 2번
+import moviepy.editor as mp
 
-# 확장자 번경
-files = glob.glob("*.mp4")
-for x in files:
-    if not os.path.isdir(x):
-        filename = os.path.splitext(x)
-        try:
-            os.rename(x, filename[0] + '.wav')
-        except:
-            pass
+# clip = mp.VideoFileClip("어느 병원 다녀 소아암 환아를 만난 9살이 하는 말  ODG.mp4")
+# clip.audio.write_audiofile("audio2.wav")
+

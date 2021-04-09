@@ -1,12 +1,12 @@
 from pydub import AudioSegment
 import os
 
-print(os.getcwd())  # C:\nmb\nada\Jongho
+print(os.getcwd())  
 
-if not os.path.isdir("splitaudio1"):
-    os.mkdir("splitaudio1")
+if not os.path.isdir("splitaudio1(소아암)"):
+    os.mkdir("splitaudio1(소아암)")
 
-audio = AudioSegment.from_file('audio.wav')
+audio = AudioSegment.from_file('audio2.wav')
 lengthaudio = len(audio)
 print("Length of Audio File", lengthaudio)
 
@@ -20,7 +20,7 @@ while start < len(audio):
     end += threshold
     print(start , end)
     chunk = audio[start:end]
-    filename = f'splitaudio1/chunk{counter}.wav'
+    filename = f'splitaudio1(소아암)/chunk{counter}.wav'
     chunk.export(filename, format="wav")
     counter +=1
     start += threshold
