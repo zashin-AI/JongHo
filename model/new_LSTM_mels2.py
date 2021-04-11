@@ -54,8 +54,9 @@ def residual_block(x, units, conv_num=3, activation='tanh'):  # ( input, output 
     for i in range(conv_num - 1):
         x = LSTM(units, return_sequences=True)(x) # return_sequences=True 이거 사용해서 lstm shape 부분 3차원으로 맞춰줌 -> 자세한 내용 찾아봐야함
         x = Activation(activation)(x)
-    x = LSTM(units)(x)
-    x = Add()([x,s])
+    x = LSTM(units, return_sequences=True)(x)
+    # x = Add()([x,s])
+    x = Concatenate(axis=-1)([x, s])
     return Activation(activation)(x)
     # return MaxPool1D(pool_size=2, strides=1)(x)
 
@@ -85,12 +86,12 @@ model.summary()
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/new_LSTM_mels.h5'
+path = 'C:/nmb/nmb_data/h5/new_LSTM_mels2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/new_LSTM_mels.h5')
+model.load_weights('C:/nmb/nmb_data/h5/new_LSTM_mels2.h5')
 
 result = model.evaluate(x_test, y_test, batch_size=16)
 print("loss : ", result[0])
