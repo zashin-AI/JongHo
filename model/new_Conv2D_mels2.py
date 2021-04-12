@@ -72,7 +72,7 @@ model = build_model(x_train.shape[1:], 2)
 print(x_train.shape[1:])    # (128, 862, 1)
 
 model.summary()
-
+'''
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
@@ -108,7 +108,7 @@ for file in files:
 end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
-
+'''
 # loss :  0.020327508449554443
 # acc :  0.9953488111495972
 # C:\nmb\nmb_data\pred_voice\FY1.wav 99.92770552635193 %의 확률로 여자입니다.

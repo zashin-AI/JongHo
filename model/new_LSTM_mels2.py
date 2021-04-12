@@ -81,7 +81,7 @@ model = build_model(x_train.shape[1:], 2) # lstm 사용할때는 1로 적용해�
 print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
-
+'''
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
@@ -117,7 +117,7 @@ for file in files:
 end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
-
+'''
 # loss :  0.7031155824661255
 # acc :  0.45221444964408875
 # C:\nmb\nmb_data\pred_voice\FY1.wav 53.74027490615845 %의 확률로 남자입니다.
