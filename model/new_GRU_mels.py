@@ -8,7 +8,7 @@ from keras.activations import *
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Dense, Conv1D, LSTM, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate
+from tensorflow.keras.layers import Dense, Conv1D, GRU, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.python.data.util.options import merge_options
 from tensorflow.python.keras.layers.wrappers import Bidirectional
@@ -50,13 +50,12 @@ model = Sequential()
 
 def residual_block(x, units, conv_num=3, activation='tanh'):  # ( input, output node, for 문 반복 횟수, activation )
     # Shortcut
-    s = LSTM(units, return_sequences=True)(x) 
+    s = GRU(units, return_sequences=True)(x) 
     for i in range(conv_num - 1):
-        x = LSTM(units, return_sequences=True)(x) # return_sequences=True 이거 사용해서 lstm shape 부분 3차원으로 맞춰줌 -> 자세한 내용 찾아봐야함
+        x = GRU(units, return_sequences=True)(x) # return_sequences=True 이거 사용해서 lstm shape 부분 3차원으로 맞춰줌 -> 자세한 내용 찾아봐야함
         x = Activation(activation)(x)
-    x = LSTM(units, return_sequences=True)(x)
-    # x = Add()([x,s])
-    x = Concatenate(axis=-1)([x, s])
+    x = GRU(units)(x)
+    x = Add()([x,s])
     return Activation(activation)(x)
     # return MaxPool1D(pool_size=2, strides=1)(x)
 
@@ -69,7 +68,7 @@ def build_model(input_shape, num_classes):
     x = residual_block(x, 128, 3)
     x = residual_block(x, 128, 3)
 
-    x = Bidirectional(LSTM(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
+    x = Bidirectional(GRU(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
     x = Dense(256, activation="tanh")(x)
     x = Dense(128, activation="tanh")(x)
 
@@ -86,12 +85,12 @@ model.summary()
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/new_LSTM_mels2.h5'
+path = 'C:/nmb/nmb_data/h5/new_GRU_mels.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/new_LSTM_mels2.h5')
+model.load_weights('C:/nmb/nmb_data/h5/new_GRU_mels.h5')
 
 result = model.evaluate(x_test, y_test, batch_size=16)
 print("loss : ", result[0])
@@ -118,23 +117,23 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.7031155824661255
+# loss :  0.695758581161499
 # acc :  0.45221444964408875
-# C:\nmb\nmb_data\pred_voice\FY1.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 53.74027490615845 %의 확률로 남자입니다.
-# time >>  0:07:13.983230
+# C:\nmb\nmb_data\pred_voice\FY1.wav 51.21222734451294 %의 확률로 남자입니다.                       (x)
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 51.21222734451294 %의 확률로 남자입니다.            (x)
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 51.21222734451294 %의 확률로 남자입니다.       (x)
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 51.21222734451294 %의 확률로 남자입니다.  (x)
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 51.21222734451294 %의 확률로 남자입니다.       (x)    
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 51.21222734451294 %의 확률로 남자입니다.       (x)
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 51.21222734451294 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 51.21222734451294 %의 확률로 남자입니다.
+# time >>  0:04:54.248165
 # 정답률 : 9/15
 
