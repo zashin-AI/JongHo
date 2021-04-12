@@ -4,11 +4,12 @@ import numpy as np
 import librosa
 import sklearn
 import datetime
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv1D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, TensorBoard
 from tensorflow.python.keras.callbacks import ModelCheckpoint
 def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
@@ -76,7 +77,20 @@ es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, v
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
 path = 'C:/nmb/nmb_data/h5/new_Conv1D_mfcc.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
-history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
+tb = TensorBoard(log_dir='C:/nmb/nmb_data/graph',histogram_freq=0, write_graph=True, write_images=True)
+history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc, tb])
+
+# 시각화
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+
+plt.title('loss & acc')
+plt.xlabel('epoch')
+plt.ylabel('loss & acc')
+plt.legend(['train_loss', 'val_loss', 'train_acc', 'val_acc'])
+plt.show()
 
 # 평가, 예측
 model.load_weights('C:/nmb/nmb_data/h5/new_Conv1D_mfcc.h5')

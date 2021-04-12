@@ -72,6 +72,11 @@ model = build_model(x_train.shape[1:], 2)
 print(x_train.shape[1:])    # (128, 862, 1)
 
 model.summary()
+
+# Total params: 48,076,834
+# Trainable params: 48,076,834
+# Non-trainable params: 0
+
 '''
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])

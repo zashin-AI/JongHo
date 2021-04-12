@@ -67,6 +67,20 @@ def build_model(input_shape, num_classes):
     x = residual_block(x, 64, 3)
     x = residual_block(x, 128, 3)
     x = residual_block(x, 128, 3)
+    
+    # Total params: 988,642
+    # Trainable params: 988,642
+    # Non-trainable params: 0
+
+    x = residual_block(inputs, 1024, 2)
+    x = residual_block(x, 512, 2)
+    x = residual_block(x, 512, 3)
+    x = residual_block(x, 256, 3)
+    x = residual_block(x, 256, 3)
+
+    # Total params: 34,121,026
+    # Trainable params: 34,121,026
+    # Non-trainable params: 0
 
     x = Bidirectional(GRU(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
     x = Dense(256, activation="tanh")(x)
@@ -80,7 +94,7 @@ model = build_model(x_train.shape[1:], 2) # lstm 사용할때는 1로 적용해�
 print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
-'''
+
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
@@ -116,24 +130,24 @@ for file in files:
 end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
-'''
-# loss :  0.695758581161499
+
+# loss :  0.6985716223716736
 # acc :  0.45221444964408875
-# C:\nmb\nmb_data\pred_voice\FY1.wav 51.21222734451294 %의 확률로 남자입니다.                       (x)
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 51.21222734451294 %의 확률로 남자입니다.            (x)
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 51.21222734451294 %의 확률로 남자입니다.       (x)
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 51.21222734451294 %의 확률로 남자입니다.  (x)
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 51.21222734451294 %의 확률로 남자입니다.       (x)    
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 51.21222734451294 %의 확률로 남자입니다.       (x)
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 51.21222734451294 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 51.21222734451294 %의 확률로 남자입니다.
-# time >>  0:04:54.248165
+# C:\nmb\nmb_data\pred_voice\FY1.wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 52.287983894348145 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 52.287983894348145 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 52.287983894348145 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 52.287983894348145 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 52.28798985481262 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 52.28798985481262 %의 확률로 남자입니다.
+# time >>  0:11:46.952111
 # 정답률 : 9/15
 
