@@ -151,3 +151,27 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # time >>  0:15:50.611800
 # 정답률 : 9/15
 
+# 시각화
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.suptitle('Conv2D_Mfcc')
+
+plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
+plt.plot(history.history['loss'], marker='.', c='red', label='loss')
+plt.plot(history.history['val_loss'], marker='.', c='blue', label='val_loss')
+plt.grid()
+
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+
+plt.subplot(2, 1, 2)    # 2행 1열중 두번째
+plt.plot(history.history['acc'], marker='.', c='red', label='acc')
+plt.plot(history.history['val_acc'], marker='.', c='blue', label='val_acc')
+plt.grid()
+
+plt.ylabel('acc')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+plt.show()
