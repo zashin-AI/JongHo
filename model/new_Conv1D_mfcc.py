@@ -128,8 +128,8 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.0
-# acc :  1.0
+# loss :  0.6867467164993286
+# acc :  0.6083915829658508
 # C:\nmb\nmb_data\pred_voice\FY1.wav 100.0 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\MZ1.wav 100.0 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 100.0 %의 확률로 남자입니다.
@@ -145,7 +145,7 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 100.0 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 100.0 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 100.0 %의 확률로 남자입니다.
-# time >>  0:00:58.534501
+# time >>  0:01:05.702237
 # 정답률 : 9/15
 
 # 시각화

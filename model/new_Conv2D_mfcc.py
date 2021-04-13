@@ -131,24 +131,24 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.0
-# acc :  1.0
-# C:\nmb\nmb_data\pred_voice\FY1.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 100.0 %의 확률로 남자입니다.
-# time >>  0:15:50.611800
+# loss :  0.6934302449226379
+# acc :  0.45221444964408875
+# C:\nmb\nmb_data\pred_voice\FY1.wav 50.14824867248535 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 50.149983167648315 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 50.14936327934265 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 50.15380382537842 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 50.14883875846863 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 50.152552127838135 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 50.152021646499634 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 50.14978647232056 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 50.1497745513916 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 50.152939558029175 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 50.14704465866089 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 50.150370597839355 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 50.15116333961487 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 50.15091300010681 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 50.15161633491516 %의 확률로 남자입니다.
+# time >>  0:15:41.959328
 # 정답률 : 9/15
 
 # 시각화

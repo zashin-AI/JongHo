@@ -50,17 +50,25 @@ def residual_block(x, units, conv_num=3, activation='relu'):  # ( input, output 
 def build_model(input_shape, num_classes):
     inputs = Input(shape=input_shape, name='input')
 
-    x = residual_block(inputs, 16, 2)
-    x = residual_block(x, 32, 2)
-    x = residual_block(x, 64, 3)
-    x = residual_block(x, 128, 3)
-    x = residual_block(x, 128, 23)
+    # x = residual_block(inputs, 16, 2)
+    # x = residual_block(x, 32, 2)
+    # x = residual_block(x, 64, 3)
+    # x = residual_block(x, 128, 3)
+    # x = residual_block(x, 128, 23)
 
-    # x = residual_block(inputs, 1024, 2)
-    # x = residual_block(x, 512, 2)
-    # x = residual_block(x, 512, 3)
-    # x = residual_block(x, 256, 3)
-    # x = residual_block(x, 256, 3)
+    # Total params: 1,177,298
+    # Trainable params: 1,177,298
+    # Non-trainable params: 0
+
+    x = residual_block(inputs, 1024, 2)
+    x = residual_block(x, 512, 2)
+    x = residual_block(x, 512, 3)
+    x = residual_block(x, 256, 3)
+    x = residual_block(x, 256, 3)
+
+    # Total params: 7,181,442
+    # Trainable params: 7,181,442
+    # Non-trainable params: 0
 
     x = Flatten()(x)
     x = Dense(256, activation="relu")(x)
@@ -126,25 +134,25 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.0
-# acc :  1.0
-# C:\nmb\nmb_data\pred_voice\FY1.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 100.0 %의 확률로 남자입니다.
-# time >>  0:01:00.518168
-# 정답률 : 9/15
+# loss :  0.6924784183502197
+# acc :  0.5477855205535889
+# C:\nmb\nmb_data\pred_voice\FY1.wav 50.23311972618103 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 50.22467374801636 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 50.2296507358551 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 50.209420919418335 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 50.20110607147217 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 50.209927558898926 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 50.23619532585144 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 50.238192081451416 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 50.24682283401489 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 50.243157148361206 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 50.25263428688049 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 50.20563006401062 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 50.22907853126526 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 50.22994875907898 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 50.22168159484863 %의 확률로 여자입니다.
+# time >>  0:00:41.034410
+# 정답률 : 6/15(모두 여자)
 
 # 시각화
 import matplotlib.pyplot as plt
