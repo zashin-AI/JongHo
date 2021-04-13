@@ -33,34 +33,34 @@ files_M = np.append(files_M, files_M_wav)
 print(files_F.shape)    # (1200,)
 print(files_M.shape)    # (1200,)
 
-total = [files_F, files_M]
-index = 0               # index 0 : 여성, 1 : 남성
-
-for folder in total : 
-    print(f"===={index}=====")
-    dataset = []
-    label = []
-    for file in folder:
-        y, sr = librosa.load(file, sr=22050, duration=5.0)
-        length = (len(y) / sr)
-        if length < 5.0 : pass
-        else:
-            mfccs = librosa.feature.mfcc(y, sr=sr, n_mfcc=20, n_fft=512, hop_length=128)
-            mfccs = normalize(mfccs, axis=1)
-
-            dataset.append(mfccs)
-            label.append(index)
+# for file in files_F:
+for file in files_M:
+    y, sr = librosa.load(file, sr=22050, duration=5.0)
+    length = (len(y) / sr)
+    if length < 5.0 : pass
+    else:
+        mfccs = librosa.feature.mfcc(y, sr=sr, n_mfcc=20, n_fft=512, hop_length=128)
+        mfccs = normalize(mfccs, axis=1)
+        dataset.append(mfccs)
+        # label.append(0)
+        label.append(1)
     
-    dataset = np.array(dataset)
-    label = np.array(label)
-    print(dataset.shape)    
-    print(label.shape)      
+dataset = np.array(dataset)
+label = np.array(label)
+print(dataset.shape)    
+print(label.shape)      
 
-    np.save(f'C:/nmb/nmb_data/npy/brandnew_{index}_mfccs.npy', arr=dataset)
-    print("dataset save")
-    np.save(f'C:/nmb/nmb_data/npy/brandnew_{index}_mfccs_label.npy', arr=label)
-    print("label save")
+# np.save('C:/nmb/nmb_data/npy/F_newtest_mfccs.npy', arr=dataset)
+# np.save('C:/nmb/nmb_data/npy/F_newtest_label_mfccs.npy', arr=label)
+np.save('C:/nmb/nmb_data/npy/M_newtest_mfccs.npy', arr=dataset)
+np.save('C:/nmb/nmb_data/npy/M_newtest_label_mfccs.npy', arr=label)
 
-    index += 1 
+# print('=====save done=====')
+# ------------------------------------------
+# F_mfccs
+# (1104, 20, 862)
+# (1104,)
 
-print('=====save done=====') 
+# M_mfccs
+# (1037, 20, 862)
+# (1037,)

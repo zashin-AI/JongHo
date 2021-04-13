@@ -68,6 +68,20 @@ def build_model(input_shape, num_classes):
     x = residual_block(x, 128, 3)
     x = residual_block(x, 128, 3)
 
+    # Total params: 355,826
+    # Trainable params: 355,826
+    # Non-trainable params: 0
+
+    # x = residual_block(inputs, 1024, 2)
+    # x = residual_block(x, 512, 2)
+    # x = residual_block(x, 512, 3)
+    # x = residual_block(x, 256, 3)
+    # x = residual_block(x, 256, 3)
+
+    # Total params: 11,392,674
+    # Trainable params: 11,392,674
+    # Non-trainable params: 0
+
     x = Bidirectional(SimpleRNN(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
     x = Dense(256, activation="tanh")(x)
     x = Dense(128, activation="tanh")(x)
@@ -80,7 +94,7 @@ model = build_model(x_train.shape[1:], 2) # lstm 사용할때는 1로 적용해�
 print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
-'''
+
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
@@ -116,7 +130,7 @@ for file in files:
 end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
-'''
+
 # loss :  0.7005831599235535
 # acc :  0.45221444964408875
 # C:\nmb\nmb_data\pred_voice\FY1.wav 52.96517014503479 %의 확률로 남자입니다.                       (x)
@@ -137,3 +151,27 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # time >>  1:19:54.385760
 # 정답률 : 9/15
 
+# 시각화
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.suptitle('SimpleRNN_Melspectrogram')
+
+plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
+plt.plot(history.history['loss'], marker='.', c='red', label='loss')
+plt.plot(history.history['val_loss'], marker='.', c='blue', label='val_loss')
+plt.grid()
+
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+
+plt.subplot(2, 1, 2)    # 2행 1열중 두번째
+plt.plot(history.history['acc'], marker='.', c='red', label='acc')
+plt.plot(history.history['val_acc'], marker='.', c='blue', label='val_acc')
+plt.grid()
+
+plt.ylabel('acc')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+plt.show()

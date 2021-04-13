@@ -19,10 +19,10 @@ def normalize(x, axis=0):
 start_now = datetime.datetime.now()
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_newtest_mels.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_newtest_mels.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_newtest_label_mels.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_newtest_label_mels.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_newtest_mfccs.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_newtest_mfccs.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_newtest_label_mfccs.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_newtest_label_mfccs.npy')
 
 x = np.concatenate([f_ds, m_ds], 0)
 y = np.concatenate([f_lb, m_lb], 0)
@@ -95,6 +95,10 @@ print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
 
+# Total params: 988,642
+# Trainable params: 988,642
+# Non-trainable params: 0
+
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
@@ -115,10 +119,10 @@ files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
-    mels = librosa.feature.melspectrogram(y, sr=sr, hop_length=128, n_fft=512)
-    pred_mels = librosa.amplitude_to_db(mels, ref=np.max)
-    pred_mels = pred_mels.reshape(1, pred_mels.shape[0], pred_mels.shape[1])
-    y_pred = model.predict(pred_mels)
+    mfccs = librosa.feature.mfcc(y, sr=sr, n_mfcc=20, n_fft=512, hop_length=128)
+    pred_mfccs = normalize(mfccs, axis=1)
+    pred_mfccs = pred_mfccs.reshape(1, pred_mfccs.shape[0], pred_mfccs.shape[1])
+    y_pred = model.predict(pred_mfccs)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
     # print(y_pred_label)
@@ -131,31 +135,31 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.6985716223716736
-# acc :  0.45221444964408875
-# C:\nmb\nmb_data\pred_voice\FY1.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# time >>  0:11:46.952111
+# loss :  9.536742027194123e-07
+# acc :  1.0
+# C:\nmb\nmb_data\pred_voice\FY1.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 99.99990463256836 %의 확률로 남자입니다.
+# time >>  0:02:37.100971
 # 정답률 : 9/15
 
 # 시각화
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))
-plt.suptitle('GRU_Melspectrogram')
+plt.suptitle('GRU_Mfcc')
 
 plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
 plt.plot(history.history['loss'], marker='.', c='red', label='loss')

@@ -77,7 +77,6 @@ model.summary()
 # Trainable params: 48,076,834
 # Non-trainable params: 0
 
-'''
 # 컴파일, 훈련
 model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
@@ -113,7 +112,7 @@ for file in files:
 end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
-'''
+
 # loss :  0.020327508449554443
 # acc :  0.9953488111495972
 # C:\nmb\nmb_data\pred_voice\FY1.wav 99.92770552635193 %의 확률로 여자입니다.
@@ -133,3 +132,28 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 100.0 %의 확률로 남자입니다.
 # time >>  0:11:24.770360
 # 정답률 : 15/15
+
+# 시각화
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.suptitle('Conv2D_Melspectrogram')
+
+plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
+plt.plot(history.history['loss'], marker='.', c='red', label='loss')
+plt.plot(history.history['val_loss'], marker='.', c='blue', label='val_loss')
+plt.grid()
+
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+
+plt.subplot(2, 1, 2)    # 2행 1열중 두번째
+plt.plot(history.history['acc'], marker='.', c='red', label='acc')
+plt.plot(history.history['val_acc'], marker='.', c='blue', label='val_acc')
+plt.grid()
+
+plt.ylabel('acc')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+plt.show()

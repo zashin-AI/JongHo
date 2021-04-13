@@ -80,7 +80,7 @@ mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/new_Conv1D_mfcc2.h5')
+# model = load_model('C:/nmb/nmb_data/h5/new_Conv1D_mels2.h5')
 
 result = model.evaluate(x_test, y_test, batch_size=16)
 print("loss : ", result[0])
@@ -126,3 +126,29 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 97.39332795143127 %의 확률로 남자입니다.
 # time >>  0:02:25.186304
 # 정답률 : 14/15
+
+
+# 시각화
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.suptitle('Conv1D_Melspectrogram')
+
+plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
+plt.plot(history.history['loss'], marker='.', c='red', label='loss')
+plt.plot(history.history['val_loss'], marker='.', c='blue', label='val_loss')
+plt.grid()
+
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+
+plt.subplot(2, 1, 2)    # 2행 1열중 두번째
+plt.plot(history.history['acc'], marker='.', c='red', label='acc')
+plt.plot(history.history['val_acc'], marker='.', c='blue', label='val_acc')
+plt.grid()
+
+plt.ylabel('acc')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+plt.show()

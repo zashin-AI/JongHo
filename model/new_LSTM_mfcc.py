@@ -8,7 +8,7 @@ from keras.activations import *
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Dense, Conv1D, GRU, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate
+from tensorflow.keras.layers import Dense, Conv1D, LSTM, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 from tensorflow.python.data.util.options import merge_options
 from tensorflow.python.keras.layers.wrappers import Bidirectional
@@ -19,10 +19,10 @@ def normalize(x, axis=0):
 start_now = datetime.datetime.now()
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_newtest_mels.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_newtest_mels.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_newtest_label_mels.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_newtest_label_mels.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_newtest_mfccs.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_newtest_mfccs.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_newtest_label_mfccs.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_newtest_label_mfccs.npy')
 
 x = np.concatenate([f_ds, m_ds], 0)
 y = np.concatenate([f_lb, m_lb], 0)
@@ -50,11 +50,11 @@ model = Sequential()
 
 def residual_block(x, units, conv_num=3, activation='tanh'):  # ( input, output node, for 문 반복 횟수, activation )
     # Shortcut
-    s = GRU(units, return_sequences=True)(x) 
+    s = LSTM(units, return_sequences=True)(x) 
     for i in range(conv_num - 1):
-        x = GRU(units, return_sequences=True)(x) # return_sequences=True 이거 사용해서 lstm shape 부분 3차원으로 맞춰줌 -> 자세한 내용 찾아봐야함
+        x = LSTM(units, return_sequences=True)(x) # return_sequences=True 이거 사용해서 lstm shape 부분 3차원으로 맞춰줌 -> 자세한 내용 찾아봐야함
         x = Activation(activation)(x)
-    x = GRU(units)(x)
+    x = LSTM(units)(x)
     x = Add()([x,s])
     return Activation(activation)(x)
     # return MaxPool1D(pool_size=2, strides=1)(x)
@@ -68,8 +68,8 @@ def build_model(input_shape, num_classes):
     x = residual_block(x, 128, 3)
     x = residual_block(x, 128, 3)
     
-    # Total params: 988,642
-    # Trainable params: 988,642
+    # Total params: 1,298,498
+    # Trainable params: 1,298,498
     # Non-trainable params: 0
 
     # x = residual_block(inputs, 1024, 2)
@@ -82,7 +82,7 @@ def build_model(input_shape, num_classes):
     # Trainable params: 34,121,026
     # Non-trainable params: 0
 
-    x = Bidirectional(GRU(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
+    x = Bidirectional(LSTM(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
     x = Dense(256, activation="tanh")(x)
     x = Dense(128, activation="tanh")(x)
 
@@ -99,12 +99,12 @@ model.summary()
 model.compile(optimizer='adam', loss="categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/new_GRU_mels.h5'
+path = 'C:/nmb/nmb_data/h5/new_GRU_mfccs.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/new_GRU_mels.h5')
+model.load_weights('C:/nmb/nmb_data/h5/new_GRU_mfccs.h5')
 
 result = model.evaluate(x_test, y_test, batch_size=16)
 print("loss : ", result[0])
@@ -115,10 +115,10 @@ files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
-    mels = librosa.feature.melspectrogram(y, sr=sr, hop_length=128, n_fft=512)
-    pred_mels = librosa.amplitude_to_db(mels, ref=np.max)
-    pred_mels = pred_mels.reshape(1, pred_mels.shape[0], pred_mels.shape[1])
-    y_pred = model.predict(pred_mels)
+    mfccs = librosa.feature.mfcc(y, sr=sr, n_mfcc=20, n_fft=512, hop_length=128)
+    pred_mfccs = normalize(mfccs, axis=1)
+    pred_mfccs = pred_mfccs.reshape(1, pred_mfccs.shape[0], pred_mfccs.shape[1])
+    y_pred = model.predict(pred_mfccs)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
     # print(y_pred_label)
@@ -131,31 +131,31 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.6985716223716736
-# acc :  0.45221444964408875
-# C:\nmb\nmb_data\pred_voice\FY1.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 52.287983894348145 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 52.28798985481262 %의 확률로 남자입니다.
-# time >>  0:11:46.952111
+# loss :  2.3841856489070778e-07
+# acc :  1.0
+# C:\nmb\nmb_data\pred_voice\FY1.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 99.99997615814209 %의 확률로 남자입니다.
+# time >>  0:02:43.493878
 # 정답률 : 9/15
 
 # 시각화
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))
-plt.suptitle('GRU_Melspectrogram')
+plt.suptitle('LSTM_Mfcc')
 
 plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
 plt.plot(history.history['loss'], marker='.', c='red', label='loss')

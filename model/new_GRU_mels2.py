@@ -142,8 +142,7 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 53.163737058639526 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 53.163737058639526 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 53.163737058639526 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 53.163737058639526 %의 확률로 남자입
-# 니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 53.163737058639526 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 53.163737058639526 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 53.163737058639526 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 53.163737058639526 %의 확률로 남자입니다.

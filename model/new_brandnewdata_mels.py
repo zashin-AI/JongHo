@@ -61,6 +61,6 @@ np.save('C:/nmb/nmb_data/npy/M_newtest_label_mels.npy', arr=label)
 # (1104, 128, 862)
 # (1104,)
 
-# M_mfccs
+# M_mels
 # (1037, 128, 862)
 # (1037,)

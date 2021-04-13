@@ -62,21 +62,21 @@ def residual_block(x, units, conv_num=3, activation='tanh'):  # ( input, output 
 def build_model(input_shape, num_classes):
     inputs = Input(shape=input_shape, name='input')
 
-    # x = residual_block(inputs, 16, 2)
-    # x = residual_block(x, 32, 2)
-    # x = residual_block(x, 64, 3)
-    # x = residual_block(x, 128, 3)
-    # x = residual_block(x, 128, 3)
+    x = residual_block(inputs, 16, 2)
+    x = residual_block(x, 32, 2)
+    x = residual_block(x, 64, 3)
+    x = residual_block(x, 128, 3)
+    x = residual_block(x, 128, 3)
 
     # Total params: 1,298,498
     # Trainable params: 1,298,498
     # Non-trainable params: 0
 
-    x = residual_block(inputs, 1024, 2)
-    x = residual_block(x, 512, 2)
-    x = residual_block(x, 512, 3)
-    x = residual_block(x, 256, 3)
-    x = residual_block(x, 256, 3)
+    # x = residual_block(inputs, 1024, 2)
+    # x = residual_block(x, 512, 2)
+    # x = residual_block(x, 512, 3)
+    # x = residual_block(x, 256, 3)
+    # x = residual_block(x, 256, 3)
 
     # Total params: 45,445,890
     # Trainable params: 45,445,890
@@ -131,23 +131,47 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.6950396299362183
-# acc :  0.45221444964408875
-# C:\nmb\nmb_data\pred_voice\FY1.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 50.904351472854614 %의 확률로 남자입니다.
-# time >>  0:16:29.120565
+# loss :  0.6908069849014282
+# acc :  0.5477855205535889
+# C:\nmb\nmb_data\pred_voice\FY1.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 51.4415442943573 %의 확률로 여자입니다.
+# time >>  0:22:42.188651
 # 정답률 : 9/15
 
+# 시각화
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.suptitle('LSTM_Melspectrogram')
+
+plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
+plt.plot(history.history['loss'], marker='.', c='red', label='loss')
+plt.plot(history.history['val_loss'], marker='.', c='blue', label='val_loss')
+plt.grid()
+
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+
+plt.subplot(2, 1, 2)    # 2행 1열중 두번째
+plt.plot(history.history['acc'], marker='.', c='red', label='acc')
+plt.plot(history.history['val_acc'], marker='.', c='blue', label='val_acc')
+plt.grid()
+
+plt.ylabel('acc')
+plt.xlabel('epoch')
+plt.legend(loc='upper right')
+plt.show()
