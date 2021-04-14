@@ -10,16 +10,17 @@ from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.python.keras.callbacks import ModelCheckpoint
+from keras import backend as K
 def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
 start_now = datetime.datetime.now()
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_test_mels.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_test_mels.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_test_label_mels.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_test_label_mels.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_F100_mels.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_F100_mels.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_F100_label_mels.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_F100_label_mels.npy')
 
 x = np.concatenate([f_ds, m_ds], 0)
 y = np.concatenate([f_lb, m_lb], 0)
@@ -34,8 +35,8 @@ aaa = 1
 x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], aaa)
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
 
-print(x_train.shape, y_train.shape) # (858, 128, 862, 1) (858,)
-print(x_test.shape, y_test.shape)   # (215, 128, 862, 1) (215,)
+print(x_train.shape, y_train.shape) # (900, 128, 862, 1) (900,)
+print(x_test.shape, y_test.shape)   # (226, 128, 862, 1) (226,)
 
 # 모델 구성
 model = Sequential()
@@ -76,20 +77,39 @@ model.summary()
 # Trainable params: 48,076,834
 # Non-trainable params: 0
 
+'''지표 정의하기'''
+def recall_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+def precision_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+def f1_m(y_true, y_pred):
+    precision = precision_m(y_true, y_pred)
+    recall = recall_m(y_true, y_pred)
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
 # 컴파일, 훈련
-model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])
+model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc', f1_m])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5'
+path = 'C:/nmb/nmb_data/h5/model_Conv2D_mels2_f1_score.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5')
+model.load_weights('C:/nmb/nmb_data/h5/model_Conv2D_mels2_f1_score.h5')
 
 result = model.evaluate(x_test, y_test, batch_size=16)
 print("loss : ", result[0])
 print("acc : ", result[1])
+print("f1_score : ", result[2])
 
 pred_pathAudio = 'C:/nmb/nmb_data/pred_voice/'
 files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
@@ -112,26 +132,28 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.00915059819817543
-# acc :  0.9953488111495972
-# C:\nmb\nmb_data\pred_voice\FY1.wav 99.99998807907104 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 99.99959468841553 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 99.99998807907104 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 99.99362230300903 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 99.99982118606567 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 89.4655168056488 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 99.99988079071045 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 99.99998807907104 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 99.99998807907104 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 99.93401169776917 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 100.0 %의 확률로 남자입니다.
-# time >>  0:03:33.439952
-# 정답률 : 15/15
+# loss :  0.0984242781996727
+# acc :  0.9601770043373108
+# f1_score :  0.9602718949317932
+# C:\nmb\nmb_data\pred_voice\FY1.wav 96.41646146774292 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 91.75167679786682 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 90.65353870391846 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 99.99188184738159 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 99.93786811828613 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 99.88117218017578 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 99.87190961837769 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 99.86273050308228 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 90.32877087593079 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 59.002918004989624 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 90.30784368515015 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 82.68318772315979 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 99.85817670822144 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 92.17601418495178 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 99.99210834503174 %의 확률로 남자입니다.
+# time >>  0:03:05.465945
+# 정답률 : 14/15
 
+'''
 # 시각화
 import matplotlib.pyplot as plt
 
@@ -156,3 +178,4 @@ plt.ylabel('acc')
 plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
+'''
