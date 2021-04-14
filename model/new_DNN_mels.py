@@ -85,8 +85,8 @@ es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, v
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
 path = 'C:/nmb/nmb_data/h5/model_DNN_mels.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
-tb = TensorBoard(log_dir='C:/nmb/nmb_data/graph',histogram_freq=0, write_graph=True, write_images=True)
-history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, tb, lr, mc])
+# tb = TensorBoard(log_dir='C:/nmb/nmb_data/graph',histogram_freq=0, write_graph=True, write_images=True)
+history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc]) # , tb
 
 # 평가, 예측
 model.load_weights('C:/nmb/nmb_data/h5/model_DNN_mels.h5')
@@ -116,24 +116,24 @@ end_now = datetime.datetime.now()
 time = end_now - start_now
 print("time >> " , time)    # time >>  0:00:33.975135
 
-# loss :  0.0022413067054003477
-# acc :  1.0
-# C:\nmb\nmb_data\pred_voice\FY1.wav 99.98902082443237 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\MZ1.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 99.99997615814209 %의 확률로 여자입니다.
+# loss :  0.020292814821004868
+# acc :  0.9953488111495972
+# C:\nmb\nmb_data\pred_voice\FY1.wav 96.23821377754211 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\MZ1.wav 99.99591112136841 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_F4.wav 99.99738931655884 %의 확률로 여자입니다.
 # C:\nmb\nmb_data\pred_voice\friendvoice_M3.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 100.0 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M4.wav 99.99994039535522 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\friendvoice_M5.wav 99.99949932098389 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\friendvoice_M6.wav 100.0 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\friendvoice_M7.wav 100.0 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 99.99955892562866 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 94.65055465698242 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 99.9998688697815 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 99.99743700027466 %의 확률로 여자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 99.99994039535522 %의 확률로 남자입니다.
-# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 99.97183680534363 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1(clear).wav 99.98257756233215 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F1_high(clear).wav 96.321040391922 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F2(clear).wav 99.97603297233582 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_F3(clear).wav 99.94295239448547 %의 확률로 여자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M1(clear).wav 99.83722567558289 %의 확률로 남자입니다.
+# C:\nmb\nmb_data\pred_voice\testvoice_M2(clear).wav 94.39923763275146 %의 확률로 남자입니다.
 # C:\nmb\nmb_data\pred_voice\testvoice_M2_low(clear).wav 100.0 %의 확률로 남자입니다.
-# time >>  0:01:07.358499
+# time >>  0:01:13.453474
 # 정답률 : 15/15
 
 # 시각화

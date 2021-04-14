@@ -16,15 +16,15 @@ def normalize(x, axis=0):
 start_now = datetime.datetime.now()
 
 # 데이터 불러오기
-f_ds = np.load('C:/nmb/nmb_data/npy/F_test_mels.npy')
-m_ds = np.load('C:/nmb/nmb_data/npy/M_test_mels.npy')
-f_lb = np.load('C:/nmb/nmb_data/npy/F_test_label_mels.npy')
-m_lb = np.load('C:/nmb/nmb_data/npy/M_test_label_mels.npy')
+f_ds = np.load('C:/nmb/nmb_data/npy/F_newtest_mels.npy')
+m_ds = np.load('C:/nmb/nmb_data/npy/M_newtest_mels.npy')
+f_lb = np.load('C:/nmb/nmb_data/npy/F_newtest_label_mels.npy')
+m_lb = np.load('C:/nmb/nmb_data/npy/M_newtest_label_mels.npy')
 
 x = np.concatenate([f_ds, m_ds], 0)
 y = np.concatenate([f_lb, m_lb], 0)
-print(x.shape, y.shape) # (1073, 128, 862) (1073,)
-
+print(x.shape, y.shape) # (2141, 128, 862) (2141,)
+'''
 # 전처리
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, shuffle=True, train_size=0.8, random_state=66
@@ -156,3 +156,4 @@ plt.ylabel('acc')
 plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
+'''
