@@ -13,6 +13,7 @@ def get_n_classes(audio_path):
     return n_classes
 
 #load the audio. Pad the audio if the file is shorter than the maximum architecture capacity
+#오디오 로드. 만약에 파일 길이가 architecture capacity 최고점 보다 짧을 경우 패딩 채워주는 부분
 def load_audio(audio_path, sr, audio_size_samples):
     X_audio, _ = librosa.load(audio_path, sr = sr, duration=5.0)
     if X_audio.size < audio_size_samples:
@@ -23,6 +24,7 @@ def load_audio(audio_path, sr, audio_size_samples):
     return X_audio
 
 #save the label names for inference
+#추론(predict)를 위한 라벨 이름 저장
 def save_label_names(audio_path, save_folder):
     label_names = {}
     for i, folder in enumerate(next(os.walk(audio_path))[1]):
@@ -32,6 +34,7 @@ def save_label_names(audio_path, save_folder):
         json.dump(label_names, outfile)
         
 #create the dataset from the audio path folder
+#오디오 경로 폴더로부터 dataset를 만드는 부분
 def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_path):
     
     if architecture_size == 'large':
@@ -43,6 +46,7 @@ def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_pat
     #     audio_size_samples = 16384
     
     #save the label names in a dict
+    #딕셔너리안에서 라벨 이름 저장해주는 부분
     save_label_names(audio_path, labels_saving_path)
     audio = []
     labels_names = []
@@ -71,6 +75,7 @@ def create_date_folder(checkpoints_path):
     return path
 
 #save the training arguments used to the checkpoints folder (it make it easier retrieve the hyperparameters afterwards)
+#checkpoints folder에 사용된 훈련 인수 저장하는 부분
 def write_parameters(sampling_rate, n_batches, batch_size, audio_path, checkpoints_path, 
                 architecture_size, path_to_weights, resume_training, override_saved_model, synth_frequency, 
                 save_frequency, latent_dim, use_batch_norm, discriminator_learning_rate, generator_learning_rate,
