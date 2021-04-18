@@ -4,7 +4,7 @@ import utils
 from tensorflow.keras.optimizers import Adam
 
 def train_model(sampling_rate = 22050,
-                n_batches = 100,
+                n_batches = 10,
                 batch_size = 4,
                 audio_path = 'audio/',
                 checkpoints_path = 'checkpoints/',
@@ -72,18 +72,22 @@ def train_model(sampling_rate = 22050,
     '''
     
     #get the number of classes from the audio folder
+    #오디오 폴더로부터 얻은 클래스의 수
     n_classes = utils.get_n_classes(audio_path)
     
     #build the discriminator
+    #discriminator(판별자) 구축
     discriminator = cwawegan_architecture.discriminator(architecture_size=architecture_size,
                                                     phaseshuffle_samples = phaseshuffle_samples,
                                                     n_classes = n_classes)
     #build the generator
+    #generator(생성자) 구축
     generator = cwawegan_architecture.generator(architecture_size=architecture_size,
                                                 z_dim = latent_dim,
                                                 use_batch_norm = use_batch_norm,
                                                 n_classes = n_classes)
     #set the optimizers
+    #discriminator(판별자), generator(생성자) optimizers 설정
     discriminator_optimizer = Adam(learning_rate = discriminator_learning_rate)
     generator_optimizer = Adam(learning_rate = generator_learning_rate)
     
@@ -125,7 +129,7 @@ def train_model(sampling_rate = 22050,
 
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
-                n_batches = 100,
+                n_batches = 10,
                 batch_size = 4,
                 audio_path = 'audio/',
                 checkpoints_path = 'checkpoints/',

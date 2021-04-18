@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 
 #get the number of classes from the number of folders in the audio dir
+#오디오 디렉토리 안에 폴더의 숫자로 부터 얻은 클래스 번호들
 def get_n_classes(audio_path):
     root, dirs, files = next(os.walk(audio_path))
     n_classes = len(dirs)
@@ -36,10 +37,10 @@ def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_pat
     if architecture_size == 'large':
         # audio_size_samples = 65536
         audio_size_samples = 114688
-    elif architecture_size == 'medium':
-        audio_size_samples = 32768
-    elif architecture_size == 'small':
-        audio_size_samples = 16384
+    # elif architecture_size == 'medium':
+    #     audio_size_samples = 32768
+    # elif architecture_size == 'small':
+    #     audio_size_samples = 16384
     
     #save the label names in a dict
     save_label_names(audio_path, labels_saving_path)

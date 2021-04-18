@@ -34,7 +34,7 @@ def Conv1DTranspose(input_tensor, filters, kernel_size, strides=2, padding='same
 def generator(z_dim = 100,
               architecture_size = 'large',
               use_batch_norm = False,
-              n_classes = 5):
+              n_classes = 2):
         
     generator_filters = [1024, 512, 256, 128, 64]
 
@@ -146,17 +146,17 @@ model.summary()
 
 def discriminator(architecture_size='large',
                   phaseshuffle_samples = 0,
-                  n_classes = 5):
+                  n_classes = 2):
     
     discriminator_filters = [64, 128, 256, 512, 1024, 2048]
     
     if architecture_size == 'large':
         # audio_input_dim = 65536
         audio_input_dim = 114688
-    elif architecture_size == 'medium':
-        audio_input_dim = 32786
-    elif architecture_size == 'small':
-        audio_input_dim = 16384
+    # elif architecture_size == 'medium':
+    #     audio_input_dim = 32786
+    # elif architecture_size == 'small':
+    #     audio_input_dim = 16384
         
     label_input = Input(shape=(1,), dtype='int32', name='discriminator_label_input')
     label_em = Embedding(n_classes, n_classes * 20)(label_input)
