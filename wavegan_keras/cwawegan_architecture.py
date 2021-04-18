@@ -37,7 +37,7 @@ def generator(z_dim = 100,
               n_classes = 5):
         
     generator_filters = [1024, 512, 256, 128, 64]
-    
+
     label_input = Input(shape=(1,), dtype='int32', name='generator_label_input')
     label_em = Embedding(n_classes, n_classes * 20, name = 'label_embedding')(label_input)
     label_em = Dense(16, name = 'label_dense')(label_em)
@@ -46,11 +46,11 @@ def generator(z_dim = 100,
     generator_input = Input(shape=(z_dim,), name='generator_input')
     x = generator_input
     
-    if architecture_size == 'small':
-        x = Dense(16384, name='generator_input_dense')(x)
-        x = Reshape((16, 1024), name='generator_input_reshape')(x)
-        if use_batch_norm == True:
-                x = BatchNormalization()(x)
+    # if architecture_size == 'small':
+    #     x = Dense(16384, name='generator_input_dense')(x)
+    #     x = Reshape((16, 1024), name='generator_input_reshape')(x)
+    #     if use_batch_norm == True:
+    #             x = BatchNormalization()(x)
 
     if architecture_size == 'medium' or architecture_size == 'large':
         x = Dense(32768, name='generator_input_dense')(x)
@@ -62,54 +62,54 @@ def generator(z_dim = 100,
     
     x = Concatenate()([x, label_em]) 
     
-    if architecture_size == 'small':
-        for i in range(4):
-            x = Conv1DTranspose(
-                input_tensor = x
-                , filters = generator_filters[i+1]
-                , kernel_size = 25 
-                , strides = 4
-                , padding='same'
-                , name = f'generator_Tconv_{i}'
-                , activation = 'relu'
-                )
-            if use_batch_norm == True:
-                x = BatchNormalization()(x)
+    # if architecture_size == 'small':
+    #     for i in range(4):
+    #         x = Conv1DTranspose(
+    #             input_tensor = x
+    #             , filters = generator_filters[i+1]
+    #             , kernel_size = 25 
+    #             , strides = 4
+    #             , padding='same'
+    #             , name = f'generator_Tconv_{i}'
+    #             , activation = 'relu'
+    #             )
+    #         if use_batch_norm == True:
+    #             x = BatchNormalization()(x)
                 
-        x = Conv1DTranspose(
-            input_tensor = x
-            , filters = 1
-            , kernel_size = 25 
-            , strides = 4
-            , padding='same'
-            , name = 'generator_Tconv_4'
-            , activation = 'tanh'
-            )
+    #     x = Conv1DTranspose(
+    #         input_tensor = x
+    #         , filters = 1
+    #         , kernel_size = 25 
+    #         , strides = 4
+    #         , padding='same'
+    #         , name = 'generator_Tconv_4'
+    #         , activation = 'tanh'
+    #         )
     
-    if architecture_size == 'medium':
-        #layer 0 to 4
-        for i in range(5):
-            x = Conv1DTranspose(
-                input_tensor = x
-                , filters = generator_filters[i]
-                , kernel_size = 25 
-                , strides = 4
-                , padding='same'
-                , name = f'generator_Tconv_{i}'
-                , activation = 'relu'
-                )
-            if use_batch_norm == True:
-                x = BatchNormalization()(x)
-        #layer 5
-        x = Conv1DTranspose(
-            input_tensor = x
-            , filters = 1
-            , kernel_size = 25
-            , strides = 2
-            , padding='same'
-            , name = 'generator_Tconv_5'
-            , activation = 'tanh'
-            )     
+    # if architecture_size == 'medium':
+    #     #layer 0 to 4
+    #     for i in range(5):
+    #         x = Conv1DTranspose(
+    #             input_tensor = x
+    #             , filters = generator_filters[i]
+    #             , kernel_size = 25 
+    #             , strides = 4
+    #             , padding='same'
+    #             , name = f'generator_Tconv_{i}'
+    #             , activation = 'relu'
+    #             )
+    #         if use_batch_norm == True:
+    #             x = BatchNormalization()(x)
+    #     #layer 5
+    #     x = Conv1DTranspose(
+    #         input_tensor = x
+    #         , filters = 1
+    #         , kernel_size = 25
+    #         , strides = 2
+    #         , padding='same'
+    #         , name = 'generator_Tconv_5'
+    #         , activation = 'tanh'
+    #         )     
 
     if architecture_size == 'large':
         #layer 0 to 4
@@ -131,7 +131,7 @@ def generator(z_dim = 100,
             input_tensor = x
             , filters = 1
             , kernel_size = 25
-            , strides = 4
+            , strides = 7
             , padding='same'
             , name = 'generator_Tconv_5'
             , activation = 'tanh'
@@ -144,16 +144,17 @@ def generator(z_dim = 100,
 model = generator()
 model.summary()
 
-def discriminator(architecture_size='small',
+def discriminator(architecture_size='large',
                   phaseshuffle_samples = 0,
                   n_classes = 5):
     
     discriminator_filters = [64, 128, 256, 512, 1024, 2048]
     
     if architecture_size == 'large':
-        audio_input_dim = 65536
+        # audio_input_dim = 65536
+        audio_input_dim = 114688
     elif architecture_size == 'medium':
-        audio_input_dim = 32768
+        audio_input_dim = 32786
     elif architecture_size == 'small':
         audio_input_dim = 16384
         
@@ -161,75 +162,75 @@ def discriminator(architecture_size='small',
     label_em = Embedding(n_classes, n_classes * 20)(label_input)
     label_em = Dense(audio_input_dim)(label_em)
     label_em = Reshape((audio_input_dim, 1))(label_em)
-    
+
     discriminator_input = Input(shape=(audio_input_dim,1), name='discriminator_input')
     x = Concatenate()([discriminator_input, label_em]) 
 
-    if architecture_size == 'small':
-        # layers 0 to 3
-        for i in range(4):
-            x = Conv1D(
-                filters = discriminator_filters[i]
-                , kernel_size = 25
-                , strides = 4
-                , padding = 'same'
-                , name = f'discriminator_conv_{i}'
-                )(x)
+    # if architecture_size == 'small':
+    #     # layers 0 to 3
+    #     for i in range(4):
+    #         x = Conv1D(
+    #             filters = discriminator_filters[i]
+    #             , kernel_size = 25
+    #             , strides = 4
+    #             , padding = 'same'
+    #             , name = f'discriminator_conv_{i}'
+    #             )(x)
             
-            x = LeakyReLU(alpha = 0.2)(x)
-            if phaseshuffle_samples > 0:
-                x = Lambda(apply_phaseshuffle)([x, phaseshuffle_samples])
+    #         x = LeakyReLU(alpha = 0.2)(x)
+    #         if phaseshuffle_samples > 0:
+    #             x = Lambda(apply_phaseshuffle)([x, phaseshuffle_samples])
                 
-        #layer 4, no phase shuffle
-        x = Conv1D(
-            filters = discriminator_filters[4]
-            , kernel_size = 25
-            , strides = 4
-            , padding = 'same'
-            , name = f'discriminator_conv_4'
-            )(x)
+    #     #layer 4, no phase shuffle
+    #     x = Conv1D(
+    #         filters = discriminator_filters[4]
+    #         , kernel_size = 25
+    #         , strides = 4
+    #         , padding = 'same'
+    #         , name = f'discriminator_conv_4'
+    #         )(x)
             
-        x = Flatten()(x)
+    #     x = Flatten()(x)
             
-    if architecture_size == 'medium':
+    # # if architecture_size == 'medium':
         
-        # layers
-        for i in range(4):
-            x = Conv1D(
-                filters = discriminator_filters[i]
-                , kernel_size = 25
-                , strides = 4
-                , padding = 'same'
-                , name = f'discriminator_conv_{i}'
-                )(x)
+    # #     # layers
+    # #     for i in range(4):
+    # #         x = Conv1D(
+    # #             filters = discriminator_filters[i]
+    # #             , kernel_size = 25
+    # #             , strides = 4
+    # #             , padding = 'same'
+    # #             , name = f'discriminator_conv_{i}'
+    # #             )(x)
             
                 
-            x = LeakyReLU(alpha = 0.2)(x)
-            if phaseshuffle_samples > 0:
-                x = Lambda(apply_phaseshuffle)([x, phaseshuffle_samples])
+    # #         x = LeakyReLU(alpha = 0.2)(x)
+    # #         if phaseshuffle_samples > 0:
+    # #             x = Lambda(apply_phaseshuffle)([x, phaseshuffle_samples])
             
             
-        x = Conv1D(
-            filters = discriminator_filters[4]
-            , kernel_size = 25
-            , strides = 4
-            , padding = 'same'
-            , name = 'discriminator_conv_4'
-            )(x)
+    # #     x = Conv1D(
+    # #         filters = discriminator_filters[4]
+    # #         , kernel_size = 25
+    # #         , strides = 4
+    # #         , padding = 'same'
+    # #         , name = 'discriminator_conv_4'
+    # #         )(x)
         
-        x = LeakyReLU(alpha = 0.2)(x)
+    # #     x = LeakyReLU(alpha = 0.2)(x)
         
-        x = Conv1D(
-            filters = discriminator_filters[5]
-            , kernel_size = 25
-            , strides = 2
-            , padding = 'same'
-            , name = 'discriminator_conv_5' 
-            )(x)
+    # #     x = Conv1D(
+    # #         filters = discriminator_filters[5]
+    # #         , kernel_size = 25
+    # #         , strides = 2
+    # #         , padding = 'same'
+    # #         , name = 'discriminator_conv_5' 
+    # #         )(x)
         
     
-        x = LeakyReLU(alpha = 0.2)(x)
-        x = Flatten()(x)
+    # #     x = LeakyReLU(alpha = 0.2)(x)
+    # #     x = Flatten()(x)
     
     if architecture_size == 'large':
         

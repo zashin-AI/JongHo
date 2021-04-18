@@ -1,6 +1,7 @@
 import librosa
 
-y, sr = librosa.load('C:/nmb/nmb_data/pansori/67CV7Z2s7KeE/a7zuPg5if14/67CV7Z2s7KeE-a7zuPg5if14-0138.flac')
+# y, sr = librosa.load('C:/nmb/nmb_data/pansori/67CV7Z2s7KeE/a7zuPg5if14/67CV7Z2s7KeE-a7zuPg5if14-0138.flac')
+y, sr = librosa.load('C:/nmb/nada/Jongho/audio/F/pansori_female_9_18.wav')
 
 print(y)
 print(len(y))
@@ -12,7 +13,7 @@ print('Audio length (seconds): %.2f' % (len(y) / sr))
 # 91883
 # Sampling rate (KHz): 22050
 # Audio length (seconds): 4.17
-
+'''
 import IPython.display as ipd
 
 ipd.Audio(y, rate=sr)
@@ -109,5 +110,5 @@ chromagram = librosa.feature.chroma_stft(y, sr=sr, hop_length=512)
 plt.figure(figsize=(16, 6))
 librosa.display.specshow(chromagram, x_axis='time', y_axis='chroma', hop_length=512)
 plt.show()
-
+'''
 

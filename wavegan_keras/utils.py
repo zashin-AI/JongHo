@@ -13,7 +13,7 @@ def get_n_classes(audio_path):
 
 #load the audio. Pad the audio if the file is shorter than the maximum architecture capacity
 def load_audio(audio_path, sr, audio_size_samples):
-    X_audio, _ = librosa.load(audio_path, sr = sr)
+    X_audio, _ = librosa.load(audio_path, sr = sr, duration=5.0)
     if X_audio.size < audio_size_samples:
         padding = audio_size_samples - X_audio.size
         X_audio = np.pad(X_audio, (0, padding), mode = 'constant')
@@ -34,7 +34,8 @@ def save_label_names(audio_path, save_folder):
 def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_path):
     
     if architecture_size == 'large':
-        audio_size_samples = 65536
+        # audio_size_samples = 65536
+        audio_size_samples = 114688
     elif architecture_size == 'medium':
         audio_size_samples = 32768
     elif architecture_size == 'small':

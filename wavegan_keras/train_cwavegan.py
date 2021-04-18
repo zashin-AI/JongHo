@@ -4,7 +4,7 @@ import utils
 from tensorflow.keras.optimizers import Adam
 
 def train_model(sampling_rate = 22050,
-                n_batches = 10,
+                n_batches = 100,
                 batch_size = 4,
                 audio_path = 'audio/',
                 checkpoints_path = 'checkpoints/',
@@ -44,6 +44,31 @@ def train_model(sampling_rate = 22050,
         generator_learning_rate (float): Generator learning rate.
         discriminator_extra_steps (int): How many steps the discriminator is trained per step of the generator.
         phaseshuffle_samples (int): Discriminator phase shuffle. 0 for no phases shuffle.
+    '''
+
+    '''
+    조건부 WaveGAN 아키텍처를 훈련시킵니다.
+    인수 :
+        sampling_rate (int) :로드 / 합성 된 오디오의 샘플링 속도.
+        n_batches (int) : 학습 할 배치 수입니다.
+        batch_size (int) : 배치 크기 (학습 프로세스 용).
+        audio_path (str) : 훈련 데이터 (wav 파일)가 저장되는 경로입니다.
+            각 클래스는 클래스 이름이있는 폴더에 있어야합니다.
+        checkpoints_path (str) : 모델을 저장하고 훈련하는 동안 오디오를 합성하는 경로
+        architecture_size (str) = wavegan 아키텍처의 크기. Eeach 크기는 다음 번호를 처리합니다.
+            오디오 샘플 수 : 'small'= 16384, 'medium'= 32768, 'large'= 65536 "
+        resume_training (bool) = 이전 세션에서 모델 가중치를 복원 하시겠습니까?
+        path_to_weights (str) = 모델 가중치가있는 위치 (학습 재개시)
+        override_saved_model (bool) = 모델 덮어 쓰기 저장
+            이전에 저장된 모델 (과거 epoch안) ?. 저장된 파일이 클 수 있습니다!
+        synth_frequency (int) : 학습 중에 샘플을 합성하려는 빈도 (배치 단위).
+        save_frequency (int) : 훈련 중 모델을 얼마나 자주 저장 하시겠습니까 (일괄).
+        latent_dim (int) : 잠재 공간의 차원.
+        use_batch_norm (bool) : 배치 정규화를 사용여부
+        Discriminator 학습률 (float) : 판별 학습률.
+        generator_learning_rate (float) : 발전기 학습률.
+        판별 자 _extra_steps (int) : 판별자가 생성기의 단계 당 훈련 된 단계 수.
+        phaseshuffle_samples (int) : 판별 기 위상 셔플. 위상 셔플이없는 경우 0입니다.
     '''
     
     #get the number of classes from the audio folder
@@ -100,7 +125,7 @@ def train_model(sampling_rate = 22050,
 
 if __name__ == '__main__':
     train_model(sampling_rate = 22050,
-                n_batches = 10,
+                n_batches = 100,
                 batch_size = 4,
                 audio_path = 'audio/',
                 checkpoints_path = 'checkpoints/',
