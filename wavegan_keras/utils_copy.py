@@ -76,7 +76,7 @@ def create_date_folder(checkpoints_path):
 def write_parameters(sampling_rate, n_batches, batch_size, audio_path, checkpoints_path, 
                 architecture_size, path_to_weights, resume_training, override_saved_model, synth_frequency, 
                 save_frequency, latent_dim, use_batch_norm, discriminator_learning_rate, generator_learning_rate,
-                discriminator_extra_steps, phaseshuffle_samples):
+                discriminator_extra_steps):
     print(f'Saving the training parameters to disk in {checkpoints_path}/training_parameters.txt')
     arguments = open(f'{checkpoints_path}/training_parameters.txt', "w")
     arguments.write(f'sampling_rate = {sampling_rate}\n')
@@ -95,5 +95,4 @@ def write_parameters(sampling_rate, n_batches, batch_size, audio_path, checkpoin
     arguments.write(f'discriminator_learning_rate = {discriminator_learning_rate}\n')
     arguments.write(f'generator_learning_rate = {generator_learning_rate}\n')
     arguments.write(f'discriminator_extra_steps = {discriminator_extra_steps}\n')
-    arguments.write(f'phaseshuffle_samples = {phaseshuffle_samples}')
     arguments.close()

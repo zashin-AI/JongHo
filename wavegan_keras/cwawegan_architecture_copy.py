@@ -6,24 +6,8 @@ from tensorflow import pad, maximum, random, int32
 #Original WaveGAN: https://github.com/chrisdonahue/wavegan
 #Label embeding using the method in https://machinelearningmastery.com/how-to-develop-a-conditional-generative-adversarial-network-from-scratch/
 
-#phase shuffle [directly from the original waveGAN implementation]
-def apply_phaseshuffle(args):
-  x, rad = args
-  pad_type = 'reflect'
-  b, x_len, nch = x.get_shape().as_list()
-  phase = random.uniform([], minval=-rad, maxval=rad + 1, dtype=int32)
-  pad_l = maximum(phase, 0)
-  pad_r = maximum(-phase, 0)
-  phase_start = pad_r
-  x = pad(x, [[0, 0], [pad_l, pad_r], [0, 0]], mode=pad_type)
-
-  x = x[:, phase_start:phase_start+x_len]
-  x.set_shape([b, x_len, nch])
-
-  return x
-
 #TODO: clean/redo this
-# TODO : 정리/다시 실행
+# TODO : 정리/다시 실행 -> generator 부분에서 실행
 def Conv1DTranspose(input_tensor, filters, kernel_size, strides=2, padding='same'
                     , name = '1DTConv', activation = 'relu'):
     x = Conv2DTranspose(filters=filters, kernel_size=(1, kernel_size), strides=(1, strides), padding=padding, 
@@ -49,8 +33,6 @@ def generator(z_dim = 100,
     if architecture_size == 'large':
         x = Dense(32768, name='generator_input_dense')(x)
         x = Reshape((16, 2048), name='generator_input_reshape')(x)
-        # x = Dense(65536, name='generator_input_dense')(x)
-        # x = Reshape((16, 4096), name='generator_input_reshape')(x)
         if use_batch_norm == True:
                 x = BatchNormalization()(x)
         
@@ -101,7 +83,7 @@ def discriminator(architecture_size='large',
         audio_input_dim = 114688
         
     label_input = Input(shape=(1,), dtype='int32', name='discriminator_label_input')
-    label_em = Embedding(n_classes, n_classes * 20)(label_input)
+    label_em = Embedding(n_classes, n_classes * 20)(label_input) # 양의 정수 (인덱스)를 고정 된 크기의 조밀 한 벡터로 변환합니다.
     label_em = Dense(audio_input_dim)(label_em)
     label_em = Reshape((audio_input_dim, 1))(label_em)
 
@@ -120,8 +102,8 @@ def discriminator(architecture_size='large',
                 , name = f'discriminator_conv_{i}'
                 )(x)
             x = LeakyReLU(alpha = 0.2)(x)
-            if phaseshuffle_samples > 0:
-                x = Lambda(apply_phaseshuffle)([x, phaseshuffle_samples])
+            # if phaseshuffle_samples > 0:
+            #     x = Lambda(apply_phaseshuffle)([x, phaseshuffle_samples])
 
         #last 2 layers without phase shuffle
         x = Conv1D(
