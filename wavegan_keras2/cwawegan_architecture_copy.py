@@ -11,12 +11,12 @@ from tensorflow import pad, maximum, random, int32
 def Conv1DTranspose(input_tensor, filters, kernel_size, strides=2, padding='same'
                     , name = '1DTConv', activation = 'relu'):
     x = Conv2DTranspose(filters=filters, kernel_size=(1, kernel_size), strides=(1, strides), padding=padding, 
-                        name = name, activation = activation)(K.expand_dims(input_tensor, axis=1))
-    x = K.squeeze(x, axis=1)
+                        name = name, activation = activation)(K.expand_dims(input_tensor, axis=1)) # input_tensor의 쉐이프 차원에서 두번째 차원을 추가하여 확장한다.
+    x = K.squeeze(x, axis=1) # x의 쉐이프의 차원 중 사이즈 1인 것을 찾아서 제거한다.
     return x
 
 def generator(z_dim = 100,
-              architecture_size = 'large',
+              architecture_size = 'audio_size',
               n_classes = 2):
         
     generator_filters = [1024, 512, 256, 128, 64]
@@ -29,7 +29,7 @@ def generator(z_dim = 100,
     generator_input = Input(shape=(z_dim,), name='generator_input')
     x = generator_input
 
-    if architecture_size == 'large':
+    if architecture_size == 'audio_size':
         x = Dense(32768, name='generator_input_dense')(x)
         x = Reshape((16, 2048), name='generator_input_reshape')(x)
         
@@ -37,7 +37,7 @@ def generator(z_dim = 100,
     
     x = Concatenate()([x, label_em]) 
     
-    if architecture_size == 'large':
+    if architecture_size == 'audio_size':
         #layer 0 to 4
         for i in range(5):
             x = Conv1DTranspose(
@@ -68,12 +68,12 @@ def generator(z_dim = 100,
 model = generator()
 # model.summary()
 
-def discriminator(architecture_size='large',
+def discriminator(architecture_size='audio_size',
                   n_classes = 2):
     
     discriminator_filters = [64, 128, 256, 512, 1024, 2048]
     
-    if architecture_size == 'large':
+    if architecture_size == 'audio_size':
         audio_input_dim = 114688
         
     label_input = Input(shape=(1,), dtype='int32', name='discriminator_label_input')
@@ -81,10 +81,10 @@ def discriminator(architecture_size='large',
     label_em = Dense(audio_input_dim)(label_em)
     label_em = Reshape((audio_input_dim, 1))(label_em)
 
-    discriminator_input = Input(shape=(audio_input_dim,1), name='discriminator_input')
+    discriminator_input = Input(shape=(audio_input_dim, 1), name='discriminator_input')
     x = Concatenate()([discriminator_input, label_em]) 
 
-    if architecture_size == 'large':
+    if architecture_size == 'audio_size':
         
         # layers
         for i in range(4):

@@ -38,7 +38,7 @@ def save_label_names(audio_path, save_folder):
 #오디오 경로 폴더에서 dataset를 만드는 부분
 def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_path):
     
-    if architecture_size == 'large':   # architecture_size : 오디오 길이
+    if architecture_size == 'audio_size':   # architecture_size : 오디오 길이
         audio_size_samples = 114688
     
     #save the label names in a dict
