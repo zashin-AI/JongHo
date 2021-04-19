@@ -54,8 +54,8 @@ def train_model(sampling_rate = 22050,
         batch_size (int) : 배치 크기 (학습 프로세스 용).
         audio_path (str) : 훈련 데이터 (wav 파일)가 저장되는 경로입니다.
             각 클래스는 클래스 이름이있는 폴더에 있어야합니다.
-        checkpoints_path (str) : 모델을 저장하고 훈련하는 동안 오디오를 합성하는 경로
-        architecture_size (str) = wavegan 아키텍처의 크기. Eeach 크기는 다음 번호를 처리합니다.
+        checkpoints_path (str) : 훈련 기간 동안 모델을 저장할 경로 / 오디오를 합성하는 경로
+        architecture_size (str) = wavegan 아키텍처의 크기. Eeach 크기는 다음 수를 처리합니다.
             오디오 샘플 수 : 'small'= 16384, 'medium'= 32768, 'large'= 65536 "
         resume_training (bool) = 이전 세션에서 모델 가중치를 복원 하시겠습니까?
         path_to_weights (str) = 모델 가중치가있는 위치 (학습 재개시)
@@ -70,7 +70,7 @@ def train_model(sampling_rate = 22050,
         판별 자 _extra_steps (int) : 판별자가 생성기의 단계 당 훈련 된 단계 수.
         phaseshuffle_samples (int) : 판별 기 위상 셔플. 위상 셔플이없는 경우 0입니다.
     '''
-    
+
     #get the number of classes from the audio folder
     #오디오 폴더로부터 얻은 클래스의 수
     n_classes = utils.get_n_classes(audio_path)
@@ -102,7 +102,8 @@ def train_model(sampling_rate = 22050,
         g_optimizer=generator_optimizer)
 
     #make a folder with the current date to store the current session to
-    #avoid overriding past synth audio files and checkpoints
+    # 현재 세션을 저장하는 현재 날짜의 폴더(checkpoint)를 만드는 부분
+    # avoid overriding past synth audio files and checkpoints
     checkpoints_path = utils.create_date_folder(checkpoints_path)
     
     #save the training parameters used to the checkpoints folder,

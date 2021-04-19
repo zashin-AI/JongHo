@@ -37,8 +37,11 @@ class WGANGP(keras.Model):
         self.g_loss_fn = self.generator_loss      
     
     # Define the loss functions to be used for discriminator
+    # discriminator(판별자)를 사용하기 위한 loss 함수 정의
     # This should be (fake_loss - real_loss)
+    # 함수 구성 부분(fake_loss - real_loss)
     # We will add the gradient penalty later to this loss function
+    # 우리는 나중에 loss 함수에 gradient penalty를 추가한다.
     def discriminator_loss(self, real_img, fake_img):
         real_loss = tf.reduce_mean(real_img)
         fake_loss = tf.reduce_mean(fake_img)

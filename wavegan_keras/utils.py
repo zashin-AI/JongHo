@@ -13,7 +13,7 @@ def get_n_classes(audio_path):
     return n_classes
 
 #load the audio. Pad the audio if the file is shorter than the maximum architecture capacity
-# 오디오를 로드합니다. 파일이 아키텍처의 최대 용량보다 짧은 경우 오디오를 채 웁니다
+# 오디오를 로드합니다. 파일이 아키텍처의 최대 용량보다 짧은 경우 오디오를 패딩르로 채우는 부분
 def load_audio(audio_path, sr, audio_size_samples):
     X_audio, _ = librosa.load(audio_path, sr = sr, duration=5.0)
     if X_audio.size < audio_size_samples:
@@ -38,7 +38,7 @@ def save_label_names(audio_path, save_folder):
 #오디오 경로 폴더에서 dataset를 만드는 부분
 def create_dataset(audio_path, sample_rate, architecture_size, labels_saving_path):
     
-    if architecture_size == 'large':
+    if architecture_size == 'large':   # architecture_size : 오디오 길이
         # audio_size_samples = 65536
         audio_size_samples = 114688
     # elif architecture_size == 'medium':
