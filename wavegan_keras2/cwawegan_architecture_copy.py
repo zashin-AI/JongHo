@@ -8,11 +8,14 @@ from tensorflow import pad, maximum, random, int32
 
 #TODO: clean/redo this
 # TODO : 정리/다시 실행 -> generator 부분에서 실행
-def Conv1DTranspose(input_tensor, filters, kernel_size, strides=2, padding='same'
+
+def Conv1DTranspose(input_tensor, filters, kernel_size, strides=4, padding='same'
                     , name = '1DTConv', activation = 'relu'):
     x = Conv2DTranspose(filters=filters, kernel_size=(1, kernel_size), strides=(1, strides), padding=padding, 
-                        name = name, activation = activation)(K.expand_dims(input_tensor, axis=1)) # input_tensor의 쉐이프 차원에서 두번째 차원을 추가하여 확장한다.
-    x = K.squeeze(x, axis=1) # x의 쉐이프의 차원 중 사이즈 1인 것을 찾아서 제거한다.
+                        name = name, activation = activation)(K.expand_dims(input_tensor, axis=1)) 
+                        # input_tensor의 쉐이프 차원에서 두번째 차원을 추가하여 확장한다.
+    x = K.squeeze(x, axis=1) 
+    # x의 쉐이프의 차원 중 사이즈 1인 것을 찾아서 제거한다.
     return x
 
 def generator(z_dim = 100,
@@ -22,7 +25,7 @@ def generator(z_dim = 100,
     generator_filters = [1024, 512, 256, 128, 64]
 
     label_input = Input(shape=(1,), dtype='int32', name='generator_label_input')
-    label_em = Embedding(n_classes, n_classes * 20, name = 'label_embedding')(label_input)
+    label_em = Embedding(n_classes, n_classes * 20, name = 'label_embedding')(label_input) # 양의 정수 (인덱스)를 고정 된 크기의 조밀 한 벡터로 변환합니다.
     label_em = Dense(16, name = 'label_dense')(label_em)
     label_em = Reshape((16, 1), name = 'label_respahe')(label_em)
     
@@ -71,7 +74,8 @@ model = generator()
 def discriminator(architecture_size='audio_size',
                   n_classes = 2):
     
-    discriminator_filters = [64, 128, 256, 512, 1024, 2048]
+    # discriminator_filters = [64, 128, 256, 512, 1024, 2048]
+    discriminator_filters = [4, 16, 64, 256, 1024, 4096]
     
     if architecture_size == 'audio_size':
         audio_input_dim = 114688
