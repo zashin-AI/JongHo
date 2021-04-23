@@ -24,7 +24,7 @@ m_lb = np.load('C:/nmb/nmb_data/npy/M_newtest_label_mels.npy')
 x = np.concatenate([f_ds, m_ds], 0)
 y = np.concatenate([f_lb, m_lb], 0)
 print(x.shape, y.shape) # (2141, 128, 862) (2141,)
-'''
+
 # 전처리
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, shuffle=True, train_size=0.8, random_state=66
@@ -38,67 +38,69 @@ print(x_train.shape, y_train.shape) # (858, 128, 862, 1) (858,)
 print(x_test.shape, y_test.shape)   # (215, 128, 862, 1) (215,)
 
 # 모델 구성
-model = Sequential()
+# model = Sequential()
 
-def residual_block(x, filters, conv_num=3, activation='relu'): 
-    # Shortcut
-    s = Conv2D(filters, 1, padding='same')(x)
-    for i in range(conv_num - 1):
-        x = Conv2D(filters, 3, padding='same')(x)
-        x = Activation(activation)(x)
-    x = Conv2D(filters, 3, padding='same')(x)
-    x = Concatenate(axis=-1)([x, s])
-    x = Activation(activation)(x)
-    return MaxPool2D(pool_size=2, strides=1)(x)
+# def residual_block(x, filters, conv_num=3, activation='relu'): 
+#     # Shortcut
+#     s = Conv2D(filters, 1, padding='same')(x)
+#     for i in range(conv_num - 1):
+#         x = Conv2D(filters, 3, padding='same')(x)
+#         x = Activation(activation)(x)
+#     x = Conv2D(filters, 3, padding='same')(x)
+#     x = Concatenate(axis=-1)([x, s])
+#     x = Activation(activation)(x)
+#     return MaxPool2D(pool_size=2, strides=1)(x)
 
-def build_model(input_shape, num_classes):
-    inputs = Input(shape=input_shape, name='input')
+# def build_model(input_shape, num_classes):
+#     inputs = Input(shape=input_shape, name='input')
 
-    x = residual_block(inputs, 16, 2)
-    x = residual_block(x, 16, 2)
-    x = residual_block(x, 8, 3)
+#     x = residual_block(inputs, 16, 2)
+#     x = residual_block(x, 16, 2)
+#     x = residual_block(x, 8, 3)
 
-    x = AveragePooling2D(pool_size=3, strides=3)(x)
-    x = Flatten()(x)
-    x = Dense(256, activation="relu")(x)
-    x = Dense(128, activation="relu")(x)
+#     x = AveragePooling2D(pool_size=3, strides=3)(x)
+#     x = Flatten()(x)
+#     x = Dense(256, activation="relu")(x)
+#     x = Dense(128, activation="relu")(x)
 
-    outputs = Dense(num_classes, activation='softmax', name="output")(x)
+#     outputs = Dense(num_classes, activation='softmax', name="output")(x)
     
-    return Model(inputs=inputs, outputs=outputs)
+#     return Model(inputs=inputs, outputs=outputs)
 
-model = build_model(x_train.shape[1:], 2)
-print(x_train.shape[1:])    # (128, 862, 1)
+# model = build_model(x_train.shape[1:], 2)
+# print(x_train.shape[1:])    # (128, 862, 1)
 
-model.summary()
+# model.summary()
 
-# Total params: 48,076,834
-# Trainable params: 48,076,834
-# Non-trainable params: 0
+# # Total params: 48,076,834
+# # Trainable params: 48,076,834
+# # Non-trainable params: 0
 
-# 컴파일, 훈련
-model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])
-es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
-lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5'
-mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
-history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
+# # 컴파일, 훈련
+# model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['acc'])
+# es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
+# lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
+# path = 'C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5'
+# mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
+# history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5')
+model = load_model('C:/nmb/nmb_data/h5/model_Conv2D_mels2.h5')
 
 result = model.evaluate(x_test, y_test, batch_size=16)
 print("loss : ", result[0])
 print("acc : ", result[1])
 
-pred_pathAudio = 'C:/nmb/nmb_data/pred_voice/'
+pred_pathAudio = 'C:/nmb/nmb_data/pred_voice2/'
 files = librosa.util.find_files(pred_pathAudio, ext=['wav'])
 files = np.asarray(files)
 for file in files:   
     y, sr = librosa.load(file, sr=22050) 
     mels = librosa.feature.melspectrogram(y, sr=sr, hop_length=128, n_fft=512)
     pred_mels = librosa.amplitude_to_db(mels, ref=np.max)
-    pred_mels = pred_mels.reshape(1, pred_mels.shape[0], pred_mels.shape[1])
+    print(pred_mels)
+    # pred_mels = pred_mels.reshape(1, pred_mels.shape[0], pred_mels.shape[1])
     y_pred = model.predict(pred_mels)
     # print(y_pred)
     y_pred_label = np.argmax(y_pred)
@@ -133,6 +135,7 @@ print("time >> " , time)    # time >>  0:00:33.975135
 # 정답률 : 15/15
 
 # 시각화
+'''
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))

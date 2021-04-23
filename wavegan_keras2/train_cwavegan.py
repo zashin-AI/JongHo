@@ -19,7 +19,7 @@ def train_model(sampling_rate = 22050,
                 generator_learning_rate = 0.00004,
                 discriminator_extra_steps = 5
                 ):
-    
+
     '''
     Train the conditional WaveGAN architecture.
     Args:
@@ -79,6 +79,7 @@ def train_model(sampling_rate = 22050,
     generator = cwawegan_architecture_copy.generator(architecture_size=architecture_size,
                                                 z_dim = latent_dim,
                                                 n_classes = n_classes)
+                                                
     #set the optimizers
     #discriminator(판별자), generator(생성자) optimizers 설정
     discriminator_optimizer = Adam(learning_rate = discriminator_learning_rate)

@@ -20,7 +20,7 @@ while start < len(audio):
     end += threshold
     print(start , end)
     chunk = audio[start:end]
-    filename = f'splitaudio1(소아암)/chunk{counter}.wav'
+    filename = f'splitaudio1(소아암)/chunk{counter}.flac'
     chunk.export(filename, format="wav")
     counter +=1
     start += threshold

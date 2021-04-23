@@ -1,7 +1,7 @@
 from pytube import YouTube
 import glob
 import os.path
-
+'''
 # 먼저 실행 1번
 # 유튜브 전용 인스턴스 생성
 par = 'https://www.youtube.com/watch?v=BXjXH3zzAYc'
@@ -16,17 +16,17 @@ import moviepy.editor as mp
 
 clip = mp.VideoFileClip("영화 두남자 주연배우 마동석 인터뷰.mp4")
 clip.audio.write_audiofile("audio5.wav")
-
+'''
 from pydub import AudioSegment
 
-origin_dir = 'C:/nmb/nada/Jongho/audio5.wav'
-out_dir = 'C:/nmb/nmb_data/'
+origin_dir = 'C:/nmb/nada/Jongho/JongHo/audio2.wav'
+out_dir = 'C:/nmb/nada/Jongho/JongHo/'
 
 audio = AudioSegment.from_file(origin_dir)
 _, w_id = os.path.split(origin_dir)
-w_id = w_id[:-4]
-start = 5000
-end = 10000
+w_id = w_id[:-5]
+start = 0
+end = 5000
 counter = 0
 print(start, end)
 chunk = audio[start:end]
