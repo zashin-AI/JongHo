@@ -70,8 +70,8 @@ def split_silence_hm(audio_dir, split_silence_dir, sum_dir) :
         # voice_handling.py 55번째 줄, 아래처럼 수정해야 돌아감
         # combined = combined.append(wav, crossfade=0) 
         
-audio_dir = 'E:\\nmb\\nmb_data\\mindslab\\minslab_f\\f_2m\\'
-split_silence_dir = "E:\\nmb\\nmb_data\\mindslab\\minslab_f\\f_total_chunk\\"
-sum_dir = "E:\\nmb\\nmb_data\\mindslab\\minslab_f\\f_total_chunk\\total\\"
+audio_dir = 'C:/nmb/nmb_data/pansori total/'
+split_silence_dir = "C:/nmb/nmb_data/pansori total/pansori_silence/"
+sum_dir = "C:/nmb/nmb_data/pansori total/pansori_sum/"
 
 split_silence_hm(audio_dir, split_silence_dir, sum_dir)

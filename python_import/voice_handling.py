@@ -52,7 +52,7 @@ def voice_sum(form, audio_dir, save_dir, out_dir):
         wavs = [AudioSegment.from_wav(wav) for wav in infiles]
         combined = wavs[0]
         for wav in wavs[1:]:
-            combined = combined.append(wav) 
+            combined = combined.append(wav,  crossfade=0) 
         combined.export(out_dir, format='wav')
         print('==== wav sum done ====')
 
