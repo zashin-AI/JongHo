@@ -60,6 +60,9 @@ def build_discriminator(img_shape):
     model.add(Dense(1,activation='sigmoid'))
     return model
 
+model = build_discriminator(img_shape)
+model.summary()
+'''
 def build_gan(generator, discriminator):
     model = Sequential()
     model.add(generator)
@@ -126,4 +129,5 @@ iterations = 20000
 batch_size= 4
 sample_interval = 1
 
-train(iterations, batch_size, sample_interval)                            
+train(iterations, batch_size, sample_interval)
+'''                            
