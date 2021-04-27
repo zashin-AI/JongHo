@@ -31,60 +31,61 @@ print(x_test.shape, y_test.shape)   # (3837, 128, 173, 1) (3837,)
 
 # 모델 구성
 
-model = Sequential()
-def residual_block(x, filters, conv_num=3, activation='relu'):
-    s = Conv2D(filters, 3, padding='same')(x)
-    for i in range(conv_num - 1):
-        x = Conv2D(filters, 3, padding='same')(x)
-        x = Activation(activation)(x)
-    x = Conv2D(filters, 3, padding='same')(x)
-    x = Add()([x, s])
-    x = Activation(activation)(x)
-    return MaxPool2D(pool_size=2, strides=2)(x)
+# model = Sequential()
+# def residual_block(x, filters, conv_num=3, activation='relu'):
+#     s = Conv2D(filters, 3, padding='same')(x)
+#     for i in range(conv_num - 1):
+#         x = Conv2D(filters, 3, padding='same')(x)
+#         x = Activation(activation)(x)
+#     x = Conv2D(filters, 3, padding='same')(x)
+#     x = Add()([x, s])
+#     x = Activation(activation)(x)
+#     return MaxPool2D(pool_size=2, strides=2)(x)
 
-def build_model(input_shape, num_classes):
-    inputs = Input(shape=input_shape, name='input')
-    x = residual_block(inputs, 16, 2)
-    x = residual_block(x, 32, 3)
-    x = residual_block(x, 64, 4)
-    x = residual_block(x, 128, 5)
-    x = residual_block(x, 256, 6)
-    x = AveragePooling2D(pool_size=3, strides=3)(x)
-    x = Flatten()(x)
-    x = Dense(256, activation="relu")(x)
-    x = Dense(128, activation="relu")(x)
-    x = Dense(64, activation="relu")(x)
-    outputs = Dense(num_classes, activation='softmax', name="output")(x)
-    return Model(inputs=inputs, outputs=outputs)
-model = build_model(x_train.shape[1:], 2)
+# def build_model(input_shape, num_classes):
+#     inputs = Input(shape=input_shape, name='input')
+#     x = residual_block(inputs, 16, 3)
+#     x = residual_block(x, 32, 3)
+#     x = residual_block(x, 64, 4)
+#     x = residual_block(x, 128, 5)
+#     x = residual_block(x, 256, 6)
+#     x = AveragePooling2D(pool_size=3, strides=3)(x)
+#     x = Flatten()(x)
+#     x = Dense(256, activation="relu")(x)
+#     x = Dense(128, activation="relu")(x)
+#     x = Dense(64, activation="relu")(x)
+#     outputs = Dense(num_classes, activation='softmax', name="output")(x)
+#     return Model(inputs=inputs, outputs=outputs)
+# model = build_model(x_train.shape[1:], 2)
 
-print(x_train.shape[1:])
-model.summary()
+# print(x_train.shape[1:])
+# model.summary()
 
-model.save('C:/nmb/nmb_data/h5/Conv2D_3.h5')
+# model.save('C:/nmb/nmb_data/h5/Conv2D_5.h5')
 
-# 컴파일, 훈련
-op = Adadelta(lr=1e-2)
-batch_size = 32
+# # 컴파일, 훈련
+# op = Adadelta(lr=1e-2)
+# batch_size = 32
 
-es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
-lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/Conv2D_3.h5'
-mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
+# es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
+# lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
+# path = 'C:/nmb/nmb_data/h5/Conv2D_5.h5'
+# mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
-model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
-history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
+# model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
+# history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/Conv2D.h5')
-model.load_weights('C:/nmb/nmb_data/h5/Conv2D_3.h5')
+model = load_model('C:/nmb/nmb_data/h5/Conv2D_4.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/Conv2D_5.h5')
 result = model.evaluate(x_test, y_test, batch_size=32)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
 
 ############################################ PREDICT ####################################
 
-pred = ['C:/nmb/nmb_data/predict_04_24/F', 'C:/nmb/nmb_data/predict_04_24/M']
+# pred = ['C:/nmb/nmb_data/predict_04_24/F', 'C:/nmb/nmb_data/predict_04_24/M']
+pred = ['C:/nmb/nmb_data/pred_voice2']
 
 count_f = 0
 count_m = 0
@@ -124,7 +125,22 @@ def beepsound():
     du = 500     # 1000 ms ==1second
     sd.Beep(fr, du) # winsound.Beep(frequency, duration)
 
+
 beepsound()
+
+# 전에 제일 좋았던 모델(파라미터수 3백만대로 줄어듬) Conv2D_3.h5
+# loss : 0.06967
+# acc : 0.97368
+# 43개 여성 목소리 중 41개 정답
+# 42개 남성 목소리 중 40개 정답
+# 작업 시간 :  0:12:36.373795
+
+# 전에 제일 좋았던 모델 살짝 튜닝(이전과 파라미터수 대충 맞춤 -> 4백만대) Conv2D_4.h5
+# loss : 0.07159
+# acc : 0.97368
+# 43개 여성 목소리 중 40개 정답
+# 42개 남성 목소리 중 42개 정답
+# 작업 시간 :  0:00:12.056999
 
 '''
 Model: "model"

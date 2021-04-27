@@ -18,15 +18,15 @@ import_test()
         end : 끝나는 부분(msec)
 '''
 
-origin_dir = 'C:/nmb/nmb_data/predict_04_25/F/'
-out_dir = 'C:/nmb/nmb_data/predict_04_25/F_1s/'
+origin_dir = 'C:/nmb/nmb_data/predict_04_26/F_10s_1/'
+out_dir = 'C:/nmb/nmb_data/predict_04_26/F_10s_2/'
 start = 0
-end = 1000
+end = 10000
 
 infiles = librosa.util.find_files(origin_dir)
 
 for files in infiles:
-    voice_split_term(origin_dir=files, out_dir=out_dir, start=0, end=1000)
+    voice_split_term(origin_dir=files, out_dir=out_dir, start=0, end=10000)
 
 
 
