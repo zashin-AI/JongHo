@@ -19,9 +19,9 @@ import_test()
 
 # 적용해보자!
 
-origin_dir = 'C:/nmb/nmb_data/pansori total/al/pansori_silence_sum/_noise/'
-threshold = 1000 # 몇초씩 자를 것인지 설정
-out_dir = 'C:/nmb/nmb_data/pansori total/pansori_f_2m1s/'
+origin_dir = 'c:/nmb/nmb_data/audio_data/'
+threshold = 5000 # 몇초씩 자를 것인지 설정
+out_dir = 'c:/nmb/nmb_data/audio_data_denoise/'
 end_threshold = 120000 # 끝나는 지점(2분)
 
 infiles = librosa.util.find_files(origin_dir)

@@ -22,8 +22,8 @@ from noise_handling import denoise_tim
 '''
 
 denoise_tim(
-    load_dir = 'C:/nmb/nmb_data/pansori total/pansori_silence_sum/',
-    out_dir = 'C:/nmb/nmb_data/pansori total/',
+    load_dir = 'c:/nmb/nmb_data/audio_data/',
+    out_dir = 'c:/nmb/nmb_data/audio_data_denoise/',
     noise_min = 5000,
     noise_max = 15000,
     n_fft = 512,

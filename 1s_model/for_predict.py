@@ -76,7 +76,7 @@ print(x_test.shape, y_test.shape)   # (3837, 128, 173, 1) (3837,)
 # history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model = load_model('C:/nmb/nmb_data/h5/Conv2D_4.h5')
+model = load_model('C:/nmb/nmb_data/h5/Conv2D_3.h5')
 # model.load_weights('C:/nmb/nmb_data/h5/Conv2D_5.h5')
 result = model.evaluate(x_test, y_test, batch_size=32)
 print("loss : {:.5f}".format(result[0]))
@@ -149,16 +149,16 @@ beepsound()
 # 전에 제일 좋았던 모델(파라미터수 3백만대로 줄어듬) Conv2D_3.h5
 # loss : 0.06967
 # acc : 0.97368
-# 43개 여성 목소리 중 41개 정답
+# 43개 여성 목소리 중 34개 정답
 # 42개 남성 목소리 중 40개 정답
-# 작업 시간 :  0:12:36.373795
+# 작업 시간 :  0:00:30.112837
 
 # 전에 제일 좋았던 모델 살짝 튜닝(이전과 파라미터수 대충 맞춤 -> 4백만대) Conv2D_4.h5
 # loss : 0.07159
 # acc : 0.97368
-# 43개 여성 목소리 중 40개 정답
-# 42개 남성 목소리 중 42개 정답
-# 작업 시간 :  0:00:12.056999
+# 43개 여성 목소리 중 38개 정답
+# 42개 남성 목소리 중 41개 정답
+# 작업 시간 :  0:00:32.818351
 
 
 
