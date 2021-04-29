@@ -124,3 +124,8 @@ plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
 
+# loss : 0.00513
+# acc : 0.99780
+# 43개 여성 목소리 중 40개 정답
+# 42개 남성 목소리 중 42개 정답
+# 작업 시간 :  0:21:43.779270
