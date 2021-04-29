@@ -17,6 +17,6 @@ np.save('C:/nmb/nmb_data/npy/project_total_npy/total_label.npy', arr=y)
 x = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_data.npy')
 y = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_label.npy')
 
-print(x.shape, y.shape)
+print(x.shape, y.shape) # (4536, 128, 862) (4536,)
 
 
