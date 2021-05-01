@@ -57,8 +57,8 @@ model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['ac
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/vgg16/vgg16_adam_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/vgg16/vgg16_adam_1.h5')
+model = load_model('C:/nmb/nmb_data/h5/5s/vgg16/vgg16_adam_1.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/5s/vgg16/vgg16_adam_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
