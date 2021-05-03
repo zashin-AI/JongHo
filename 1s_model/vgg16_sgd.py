@@ -10,7 +10,7 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.applications import MobileNet, VGG16
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
 from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop, SGD
 
 start_now = datetime.now()
@@ -52,9 +52,10 @@ es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, v
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
 path = 'C:/nmb/nmb_data/h5/5s/vgg16/vgg16_sgd_2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
+tb = TensorBoard(log_dir='C:/study/graph/'+ start_now.strftime("%Y%m%d-%H%M%S") + "/",histogram_freq=0, write_graph=True, write_images=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
-history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
+history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc, tb])
 
 # 평가, 예측
 # model = load_model('C:/nmb/nmb_data/h5/5s/vgg16/vgg16_sgd_2.h5')
