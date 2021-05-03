@@ -85,15 +85,13 @@ for pred_pathAudio in pred:
         y_pred = model.predict(pred_mels)
         y_pred_label = np.argmax(y_pred)
         if y_pred_label == 0:   # 여성이라고 예측
-            # print(file, '{:.4f} 의 확률로 여자입니다.', format((y_pred[0][0])*100))
+            print(file, '{:.4f} 의 확률로 여자입니다.', format((y_pred[0][0])*100))
             if name == 'F' :
                 count_f = count_f + 1
-                print(file, '{:.4f} 의 확률로 여자입니다.', format((y_pred[0][0])*100))
         else:                   # 남성이라고 예측
-            # print(file, '{:.4f} 의 확률로 남자입니다.', format((y_pred[0][1])*100))
+            print(file, '{:.4f} 의 확률로 남자입니다.', format((y_pred[0][1])*100))
             if name == 'M' :
                 count_m = count_m + 1
-                print(file, '{:.4f} 의 확률로 남자입니다.', format((y_pred[0][1])*100))
 
 print("43개 여성 목소리 중 "+str(count_f)+"개 정답")
 print("43개 남성 목소리 중 "+str(count_m)+"개 정답")
@@ -130,5 +128,5 @@ plt.show()
 # loss : 0.03677
 # acc : 0.99670
 # 43개 여성 목소리 중 41개 정답
-# 42개 남성 목소리 중 43개 정답
+# 43개 남성 목소리 중 43개 정답
 # 작업 시간 :  2:20:04.940158
