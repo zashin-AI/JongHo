@@ -7,11 +7,11 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.applications import MobileNet, VGG16, DenseNet121, ResNet101
+from tensorflow.keras.applications import MobileNet, InceptionV3
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
-from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop, SGD
+from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
 
 start_now = datetime.now()
 
@@ -31,7 +31,7 @@ x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
 print(x_train.shape, y_train.shape) # (3628, 128, 862, 1) (3628,)
 print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,)
 
-model = ResNet101(
+model = InceptionV3(
     include_top=True,
     input_shape=(128,862,1),
     classes=2,
@@ -42,23 +42,23 @@ model = ResNet101(
 model.summary()
 # model.trainable = False
 
-model.save('C:/nmb/nmb_data/h5/5s/densenet/resnet_sgd_1.h5')
+model.save('C:/nmb/nmb_data/h5/5s/Inception/Inception_adam_1.h5')
 
 # 컴파일, 훈련
-op = SGD(lr=1e-2)
-batch_size = 4
+op = Adam(lr=1e-2)
+batch_size = 8
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/densenet/resnet_sgd_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/Inception/Inception_adam_1.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model = load_model('C:/nmb/nmb_data/h5/5s/densenet/resnet_sgd_1.h5')
-# model.load_weights('C:/nmb/nmb_data/h5/5s/densenet/resnet_sgd_1.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/Inception/Inception_adam_1.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/Inception/Inception_adam_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -103,7 +103,7 @@ print("작업 시간 : ", time)
 import matplotlib.pyplot as plt
 
 plt.figure(figsize=(10, 6))
-plt.suptitle('Resnet')
+plt.suptitle('Inception')
 
 plt.subplot(2, 1, 1)    # 2행 1열중 첫번째
 plt.plot(history.history['loss'], marker='.', c='red', label='loss')
@@ -124,8 +124,8 @@ plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
 
-# loss : 0.00792
-# acc : 0.99670
-# 43개 여성 목소리 중 40개 정답
+# loss : 0.00632
+# acc : 0.99780
+# 43개 여성 목소리 중 41개 정답
 # 43개 남성 목소리 중 42개 정답
-# 작업 시간 :  0:53:00.617713
+# 작업 시간 :  0:40:50.401631
