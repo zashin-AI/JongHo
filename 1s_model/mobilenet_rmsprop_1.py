@@ -30,7 +30,7 @@ x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
 print(x_train.shape, y_train.shape) # (3628, 128, 862, 1) (3628,)
 print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,)
-
+'''
 model = MobileNet(
     include_top=True,
     input_shape=(128,862,1),
@@ -55,10 +55,10 @@ mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
-
+'''
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5')
+model = load_model('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -98,7 +98,7 @@ print("43개 남성 목소리 중 "+str(count_m)+"개 정답")
 end = datetime.now()
 time = end - start_now
 print("작업 시간 : ", time)
-
+'''
 # 시각화
 import matplotlib.pyplot as plt
 
@@ -123,7 +123,7 @@ plt.ylabel('acc')
 plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
-
+'''
 # loss : 0.00041
 # acc : 1.00000
 # 43개 여성 목소리 중 42개 정답
