@@ -42,15 +42,15 @@ model = EfficientNetB4(
 model.summary()
 # model.trainable = False
 
-model.save('C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_adadelta_1.h5')
+model.save('C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_nadam_1.h5')
 
 # 컴파일, 훈련
-op = Adadelta(lr=1e-3)
+op = Nadam(lr=1e-3)
 batch_size = 4
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_adadelta_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_nadam_1.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 tb = TensorBoard(log_dir='C:/study/graph/'+ start_now.strftime("%Y%m%d-%H%M%S") + "/",histogram_freq=0, write_graph=True, write_images=True)
 
@@ -58,8 +58,8 @@ model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['ac
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc, tb])
 
 # 평가, 예측
-model = load_model('C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_adadelta_1.h5')
-# model.load_weights('C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_adadelta_1.h5')
+model = load_model('C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_nadam_1.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/5s/EfficientNet/efficientnet_nadam_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -125,8 +125,8 @@ plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
 
-# loss : 0.22976
-# acc : 0.92291
-# 43개 여성 목소리 중 40개 정답
-# 43개 남성 목소리 중 33개 정답
-# 작업 시간 :  8:57:09.710801
+# loss : 0.00463
+# acc : 0.99780
+# 43개 여성 목소리 중 41개 정답
+# 43개 남성 목소리 중 42개 정답
+# 작업 시간 :  4:24:18.732240
