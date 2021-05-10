@@ -19,7 +19,7 @@ start_now = datetime.now()
 x = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_data.npy')
 y = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_label.npy')
 
-print(x.shape, y.shape) # (1073, 128, 862) (1073,)
+print(x.shape, y.shape) # (4536, 128, 862) (4536,)
 
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, shuffle=True, random_state=42
