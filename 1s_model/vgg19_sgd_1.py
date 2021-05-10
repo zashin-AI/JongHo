@@ -11,7 +11,7 @@ from tensorflow.keras.applications import MobileNet, VGG19
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau, TensorBoard
-from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
+from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop, SGD
 
 start_now = datetime.now()
 
@@ -19,7 +19,7 @@ start_now = datetime.now()
 x = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_data.npy')
 y = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_label.npy')
 
-print(x.shape, y.shape) # (1073, 128, 862) (1073,)
+print(x.shape, y.shape) # (4536, 128, 862) (4536,)
 
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, shuffle=True, random_state=42
@@ -30,7 +30,7 @@ x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
 print(x_train.shape, y_train.shape) # (3628, 128, 862, 1) (3628,)
 print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,)
-
+'''
 model = VGG19(
     include_top=True,
     input_shape=(128,862,1),
@@ -42,24 +42,24 @@ model = VGG19(
 model.summary()
 # model.trainable = False
 
-model.save('C:/nmb/nmb_data/h5/5s/vgg19/vgg19_nadam_1.h5')
+model.save('C:/nmb/nmb_data/h5/5s/vgg19/vgg19_sgd_1.h5')
 
 # 컴파일, 훈련
-op = Nadam(lr=1e-3)
+op = SGD(lr=1e-2)
 batch_size = 4
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/vgg19/vgg19_nadam_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/vgg19/vgg19_sgd_1.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 tb = TensorBoard(log_dir='C:/study/graph/'+ start_now.strftime("%Y%m%d-%H%M%S") + "/",histogram_freq=0, write_graph=True, write_images=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc, tb])
-
+'''
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/vgg19/vgg19_nadam_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/vgg19/vgg19_nadam_1.h5')
+model = load_model('C:/nmb/nmb_data/h5/5s/vgg19/vgg19_sgd_1.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/5s/vgg19/vgg19_sgd_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -99,7 +99,7 @@ print("43개 남성 목소리 중 "+str(count_m)+"개 정답")
 end = datetime.now()
 time = end - start_now
 print("작업 시간 : ", time)
-
+'''
 # 시각화
 import matplotlib.pyplot as plt
 
@@ -124,9 +124,9 @@ plt.ylabel('acc')
 plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
-
-# loss : 0.69331
-# acc : 0.44934
-# 43개 여성 목소리 중 0개 정답
-# 43개 남성 목소리 중 43개 정답
-# 작업 시간 :  0:41:51.111829
+'''
+# loss : 0.02304
+# acc : 0.99229
+# 43개 여성 목소리 중 42개 정답
+# 43개 남성 목소리 중 42개 정답
+# 작업 시간 :  0:00:37.691610
