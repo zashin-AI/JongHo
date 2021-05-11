@@ -1,3 +1,4 @@
+from functools import reduce
 import librosa
 import soundfile as sf
 import os
@@ -56,5 +57,5 @@ def denoise_tim(
                     hop_length=hop_length,
                     win_length=win_length)
 
-                sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', data, sr) # 노이즈 제거 한 파일 생성
+                sf.write(out_dir + ext_dir + filename[:-4] + '_denoise.wav', reduce_noise, sr) # 노이즈 제거 한 파일 생성
                 print("%s/%s" % (path, filename) + ' done') # 완료 된 경우에 출력
