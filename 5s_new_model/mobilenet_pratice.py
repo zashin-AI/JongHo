@@ -73,7 +73,6 @@ x = pointwise_bn_relu(x, 64)
 x = ZeroPadding2D(padding=((0, 1), (0, 1)))(x) 
 # ((top_pad, bottom_pad), (left_pad, right_pad))이기 때문에 
 # 내가 원하는 위치에만 패딩 값을 줄 수 있다.
-x = ZeroPadding2D(padding=((0, 1), (0, 1)))(x) 
 
 
 x = depthwise_bn_relu(x, 2, 'valid')  
@@ -92,14 +91,14 @@ x = pointwise_bn_relu(x, (256))
 x = ZeroPadding2D(padding=((0, 1), (0, 1)))(x)
 
 
-x = depthwise_bn_relu(x, 2, 'same')
+x = depthwise_bn_relu(x, 2, 'valid')
 x = pointwise_bn_relu(x, 512)
 
 for _ in range(5):
     x = depthwise_bn_relu(x, 1, 'same')
     x = pointwise_bn_relu(x, 512)
 
-# x = ZeroPadding2D(padding=((0, 1), (0, 1)))(x)
+x = ZeroPadding2D(padding=((0, 1), (0, 1)))(x)
 
 x = depthwise_bn_relu(x, 2, 'valid')
 x = pointwise_bn_relu(x, 1024)
