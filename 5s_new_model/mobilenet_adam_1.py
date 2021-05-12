@@ -13,6 +13,8 @@ from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, 
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
 
+from tensorflow.keras.layers import DepthwiseConv2D
+
 start_now = datetime.now()
 
 # 데이터 불러오기
