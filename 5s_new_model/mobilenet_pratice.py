@@ -84,7 +84,7 @@ x = pointwise_bn_relu(x, 128)
 x = ZeroPadding2D(padding=((0, 1), (0, 1)))(x)
 
 
-# x = depthwise_bn_relu(x, 2, 'valid')
+x = depthwise_bn_relu(x, 2, 'valid')
 x = pointwise_bn_relu(x, 256)
 
 x = depthwise_bn_relu(x, 1, 'same')
@@ -111,11 +111,9 @@ x = GlobalAveragePooling2D()(x)
 x = Reshape((1, 1, 1024))(x)
 x = Dropout(0.001)(x)
 x = Conv2D(2, (1, 1), strides=(1, 1), padding='same')(x)
-# x = Activation('softmax')(x)
 x = Reshape((2,))(x)
 
 output_tensor = Activation('softmax')(x)
-# output_tensor = Reshape((2,))(x)
  
  
 my_mobile = Model(input_tensor, output_tensor)
