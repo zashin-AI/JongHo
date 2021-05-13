@@ -11,7 +11,7 @@ from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, TensorBoard
 from tensorflow.python.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
+from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop, SGD
 
 def normalize(x, axis=0):
     return sklearn.preprocessing.minmax_scale(x, axis=axis)
@@ -85,24 +85,24 @@ print(x_train.shape[1:])    # (128, 862, 1)
 
 model.summary()
 
-op = Adam(lr=1e-3)
+op = SGD(lr=1e-2)
 batch_size = 32
 
 # 컴파일, 훈련
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/DNN_adam_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/DNN_sgd_1.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 # tb = TensorBoard(log_dir='C:/nmb/nmb_data/graph',histogram_freq=0, write_graph=True, write_images=True)
 history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_adam_1.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_sgd_1.h5')
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/DNN_adam_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_adam_1.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/DNN_sgd_1.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_sgd_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -168,8 +168,8 @@ plt.xlabel('epoch')
 plt.legend(loc='upper right')
 plt.show()
 
-# loss : 0.16942
-# acc : 0.92731
+# loss : 0.24913
+# acc : 0.90088
 # 43개 여성 목소리 중 40개 정답
-# 43개 남성 목소리 중 41개 정답
-# 작업 시간 :  0:18:03.439263
+# 43개 남성 목소리 중 39개 정답
+# 작업 시간 :  0:03:16.837241
