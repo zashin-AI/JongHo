@@ -73,7 +73,7 @@ def _split_silence(audio_file) :
     dbfs = audio_file.dBFS
     audio_chunks = split_on_silence(
         audio_file,  
-        min_silence_len= 1000,
+        min_silence_len= 880,
         silence_thresh= dbfs - 30,
         keep_silence= True
     )
