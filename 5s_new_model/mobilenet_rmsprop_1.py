@@ -16,7 +16,7 @@ from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
 start_now = datetime.now()
 
 # 데이터 불러오기
-x = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_data.npy')
+x = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_data.npy') 
 y = np.load('C:/nmb/nmb_data/npy/project_total_npy/total_label.npy')
 
 print(x.shape, y.shape) # (1073, 128, 862) (1073,)
@@ -29,7 +29,7 @@ aaa = 1
 x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], aaa)
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
 print(x_train.shape, y_train.shape) # (3628, 128, 862, 1) (3628,)
-print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,)
+print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,) 
 '''
 model = MobileNet(
     include_top=True,
