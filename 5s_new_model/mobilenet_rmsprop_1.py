@@ -12,6 +12,7 @@ from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
+from keras import backend as K
 
 start_now = datetime.now()
 
@@ -30,7 +31,7 @@ x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], 
 x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
 print(x_train.shape, y_train.shape) # (3628, 128, 862, 1) (3628,)
 print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,) 
-'''
+
 model = MobileNet(
     include_top=True,
     input_shape=(128,862,1),
@@ -42,7 +43,25 @@ model = MobileNet(
 model.summary()
 # model.trainable = False
 
-model.save('C:/nmb/nmb_data/h5/5s/mobilenet_rmsprop_1.h5')
+'''지표 정의하기'''
+def recall_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+def precision_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+def f1_m(y_true, y_pred):
+    precision = precision_m(y_true, y_pred)
+    recall = recall_m(y_true, y_pred)
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))
+
+model.save('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5')
 
 # 컴파일, 훈련
 op = RMSprop(lr=1e-3)
@@ -50,18 +69,19 @@ batch_size = 8
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
-model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
+model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc', f1_m])
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
-'''
+
 # 평가, 예측
-model = load_model('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5')
-# model.load_weights('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_1.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
+print("f1_score : {:.5f}".format(result[2]))
 
 ############################################ PREDICT ####################################
 
