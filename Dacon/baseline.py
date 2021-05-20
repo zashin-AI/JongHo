@@ -40,7 +40,7 @@ print(test_.head())
 # 2   E:/open/test\100.wav   100
 # 3  E:/open/test\1000.wav  1000
 # 4  E:/open/test\1001.wav  1001
-
+'''
 # 데이터 전처리
 def load_data(paths):
 
@@ -60,26 +60,26 @@ def load_data(paths):
 # os.mkdir("E:/npy_data")
 
 africa_train_data = load_data(africa_train_paths)
-np.save("E:/npy_data/africa_npy.npy", africa_train_data)
+np.save("E:/npy_data/africa_npy", africa_train_data)
 
 australia_train_data = load_data(australia_train_paths)
-np.save("E:/npy_data/australia_npy.npy", australia_train_data)
+np.save("E:/npy_data/australia_npy", australia_train_data)
 
 canada_train_data = load_data(canada_train_paths)
-np.save("E:/npy_data/canada_npy.npy", canada_train_data)
+np.save("E:/npy_data/canada_npy", canada_train_data)
 
 england_train_data = load_data(england_train_paths)
-np.save("E:/npy_data/england_npy.npy", england_train_data)
+np.save("E:/npy_data/england_npy", england_train_data)
 
 hongkong_train_data = load_data(hongkong_train_paths)
-np.save("E:/npy_data/hongkong_npy.npy", hongkong_train_data)
+np.save("E:/npy_data/hongkong_npy", hongkong_train_data)
 
 us_train_data = load_data(us_train_paths)
-np.save("E:/npy_data/us_npy.npy", us_train_data)
+np.save("E:/npy_data/us_npy", us_train_data)
 
 test_data = load_data(test_["path"])
-np.save("E:/npy_data/test_npy.npy", test_data)
-
+np.save("E:/npy_data/test_npy", test_data)
+'''
 # npy파일로 저장된 데이터를 불러옵니다.
 africa_train_data = np.load("E:/npy_data/africa_npy.npy", allow_pickle=True)
 australia_train_data = np.load("E:/npy_data/australia_npy.npy", allow_pickle=True)
@@ -118,7 +118,7 @@ def set_length(data, d_mini):
 
 # feature를 생성합니다.
 
-def get_feature(data, sr=22050, n_fft=512, win_length = 200, hop_length=128, n_mels=128):
+def get_feature(data, sr=22050, n_fft=256, win_length = 200, hop_length=160, n_mels=64):
     mel = []
     for i in data:
         # win_length 는 음성을 작은 조각으로 자를때 작은 조각의 크기입니다.
@@ -168,4 +168,128 @@ train_y = np.concatenate((np.zeros(len(africa_train_data), dtype = np.int),
                           np.ones(len(us_train_data), dtype = np.int) * 5), axis = 0)
 
 print(train_x.shape, train_y.shape, test_x.shape)
+# (25520, 64, 690, 1) (25520,) (6100, 64, 690, 1)
 
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import (Input, Convolution2D, BatchNormalization, Flatten,
+                                     Dropout, Dense, AveragePooling2D, Add)
+from tensorflow.keras.callbacks import EarlyStopping
+
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score
+
+def block(input_, units = 32, dropout_rate = 0.5):
+    
+    x = Convolution2D(units, 3, padding ="same", activation = "relu")(input_)
+    x = BatchNormalization()(x)
+    x_res = x
+    x = Convolution2D(units, 3, padding ="same", activation = "relu")(x)
+    x = BatchNormalization()(x)
+    x = Convolution2D(units, 3, padding ="same", activation = "relu")(x)
+    x = BatchNormalization()(x)
+    x = Add()([x, x_res])
+    x = AveragePooling2D()(x)
+    x = Dropout(rate=dropout_rate)(x)
+    
+    return x
+
+def second_block(input_, units = 64, dropout_rate = 0.5):
+    
+    x = Convolution2D(units, 1, padding ="same", activation = "relu")(input_)
+    x = Convolution2D(units, 3, padding ="same", activation = "relu")(x)
+    x = Convolution2D(units * 4, 1, padding ="same", activation = "relu")(x)
+    x = BatchNormalization()(x)
+    x_res = x
+    x = Convolution2D(units, 1, padding ="same", activation = "relu")(x)
+    x = Convolution2D(units, 3, padding ="same", activation = "relu")(x)
+    x = Convolution2D(units * 4, 1, padding ="same", activation = "relu")(x)
+    x = BatchNormalization()(x)
+    # x = Convolution2D(units, 1, padding = "same", activation = "relu")(x)
+    # x = Convolution2D(units, 3, padding ="same", activation = "relu")(x)
+    # x = Convolution2D(units * 4, 1, padding = "same", activation = "relu")(x)
+    # x = BatchNormalization()(x)
+    x = Add()([x, x_res])
+    x = AveragePooling2D()(x)
+    x = Dropout(rate=dropout_rate)(x)
+    
+    return x
+
+def build_fn():
+    dropout_rate = 0.3
+    
+    in_ = Input(shape = (train_x.shape[1:]))
+    
+    block_01 = block(in_, units = 32, dropout_rate = dropout_rate)
+    block_02 = block(block_01, units = 64, dropout_rate = dropout_rate)
+    block_03 = block(block_02, units = 128, dropout_rate = dropout_rate)
+
+    block_04 = second_block(block_03, units = 64, dropout_rate = dropout_rate)
+    block_05 = second_block(block_04, units = 128, dropout_rate = dropout_rate)
+
+    x = Flatten()(block_05)
+
+    x = Dense(units = 128, activation = "relu")(x)
+    x = BatchNormalization()(x)
+    x_res = x
+    x = Dropout(rate = dropout_rate)(x)
+
+    x = Dense(units = 128, activation = "relu")(x)
+    x = BatchNormalization()(x)
+    x = Add()([x_res, x])
+    x = Dropout(rate = dropout_rate)(x)
+
+    model_out = Dense(units = 6, activation = 'softmax')(x)
+    model = Model(in_, model_out)
+    return model
+
+# def build_fn():
+#     model = MobileNet(
+#         include_top=True,
+#         input_shape=(64, 690, 1),
+#         classes=2,
+#         classifier_activation='softmax',
+#         pooling=None,
+#         weights=None,
+#     )
+#     return model
+
+model = build_fn()    
+model.summary()
+
+split = StratifiedKFold(n_splits = 3, shuffle = True, random_state = 10)
+
+pred = []
+pred_ = []
+
+for train_idx, val_idx in split.split(train_x, train_y):
+    x_train, y_train = train_x[train_idx], train_y[train_idx]
+    x_val, y_val = train_x[val_idx], train_y[val_idx]
+
+    model = build_fn()
+    model.compile(optimizer = keras.optimizers.Adam(0.002),
+                 loss = keras.losses.SparseCategoricalCrossentropy(),
+                 metrics = ['acc'])
+
+    history = model.fit(x = x_train, y = y_train, validation_data = (x_val, y_val), epochs = 8)
+    print("*******************************************************************")
+    pred.append(model.predict(test_x))
+    pred_.append(np.argmax(model.predict(test_x), axis = 1))
+    print("*******************************************************************")
+
+def cov_type(data):
+    return np.int(data)
+
+# 처음에 살펴본 것처럼 glob로 test data의 path는 sample_submission의 id와 같이 1,2,3,4,5.....으로 정렬 되어있지 않습니다.
+# 만들어둔 test_ 데이터프레임을 이용하여 sample_submission과 predict값의 id를 맞춰줍니다.
+
+result = pd.concat([test_, pd.DataFrame(np.mean(pred, axis = 0))], axis = 1).iloc[:, 1:]
+result["id"] = result["id"].apply(lambda x : cov_type(x))
+
+result = pd.merge(sample_submission["id"], result)
+result.columns = sample_submission.columns
+
+print(result)
+
+result.to_csv("DACON.csv", index = False)
