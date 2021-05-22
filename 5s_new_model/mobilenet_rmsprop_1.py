@@ -61,7 +61,7 @@ def f1_m(y_true, y_pred):
     recall = recall_m(y_true, y_pred)
     return 2*((precision*recall)/(precision+recall+K.epsilon()))
 
-model.save('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5')
+model.save('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_3.h5')
 
 # 컴파일, 훈련
 op = RMSprop(lr=1e-3)
@@ -69,19 +69,22 @@ batch_size = 8
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5'
+path = 'C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_3.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
-model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc', f1_m])
+model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc', f1_m, recall_m, precision_m])
 history = model.fit(x_train, y_train, epochs=1000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_2.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_3.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/mobilenet/mobilenet_rmsprop_3.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
 print("f1_score : {:.5f}".format(result[2]))
+print("recall_m : {:.5f}".format(result[3]))
+print("precision_m : {:.5f}".format(result[4]))
+
 
 ############################################ PREDICT ####################################
 
