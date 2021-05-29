@@ -75,7 +75,7 @@ plt.plot(train_sizes, -train_scores_model.mean(1), 'o-', color="r", label="log_l
 plt.plot(train_sizes, -test_scores_model.mean(1), 'o-', color="g", label="val log_loss")
 
 plt.xlabel("Train size")
-plt.ylabel("Log loss")
+# plt.ylabel("Log loss")
 plt.ylabel("Accuracy")
 plt.title('lgbm')
 plt.legend(loc="best")
