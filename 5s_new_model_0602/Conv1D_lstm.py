@@ -8,9 +8,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Dense, Conv2D, MaxPool2D, AveragePooling2D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU, Conv1D
+from tensorflow.keras.layers import Dense, Conv2D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU, Conv1D, LSTM
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
+from tensorflow.python.keras.layers.wrappers import Bidirectional
 
 start = datetime.now()
 
@@ -23,45 +24,51 @@ x_train, x_test, y_train, y_test = train_test_split(
     x, y, train_size=0.8, shuffle=True, random_state=42
 )
 
-aaa = 1 
-x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], aaa)
-x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
-print(x_train.shape, y_train.shape) # (3628, 128, 862, 1) (3628,)
-print(x_test.shape, y_test.shape)   # (908, 128, 862, 1) (908,)
+# aaa = 1 
+# x_train = x_train.reshape(x_train.shape[0], x_train.shape[1], x_train.shape[2], aaa)
+# x_test = x_test.reshape(x_test.shape[0], x_test.shape[1], x_test.shape[2], aaa)
+print(x_train.shape, y_train.shape) # (3628, 128, 862) (3628,)
+print(x_test.shape, y_test.shape)   # (908, 128, 862) (908,)
 
 # 모델 구성
 
 model = Sequential()
-def residual_block(x, filters, conv_num=3, activation='relu'):
-    s = Conv2D(filters, 3, padding='same')(x)
+
+def residual_block(x, filters, conv_num=3, activation='relu'):  # ( input, output node, for 문 반복 횟수, activation )
+    # Shortcut
+    s = Conv1D(filters, 1, padding='same')(x)
     for i in range(conv_num - 1):
         x = Conv1D(filters, 3, padding='same')(x)
         x = Activation(activation)(x)
-    x = Conv1D(filters, 3, padding='same')(x)
-    x = Add()([x, s])
+    x = LSTM(filters)(x)
+    x = Add()([x,s])
     x = Activation(activation)(x)
-    return MaxPool2D(pool_size=2, strides=2)(x)
+    return MaxPool1D(pool_size=2, strides=1)(x)
 
 def build_model(input_shape, num_classes):
     inputs = Input(shape=input_shape, name='input')
-    x = residual_block(inputs, 16, 3)
-    x = residual_block(x, 32, 3)
-    x = residual_block(x, 64, 4)
-    x = residual_block(x, 128, 5)
-    x = residual_block(x, 256, 6)
-    x = AveragePooling2D(pool_size=3, strides=3)(x)
+
+    x = residual_block(inputs, 16, 2)
+    x = residual_block(x, 32, 2)
+    x = residual_block(x, 64, 3)
+    x = residual_block(x, 128, 3)
+    x = residual_block(x, 128, 23)
+
+    x = AveragePooling1D(pool_size=3, strides=3)(x)
     x = Flatten()(x)
     x = Dense(256, activation="relu")(x)
     x = Dense(128, activation="relu")(x)
-    x = Dense(64, activation="relu")(x)
+
     outputs = Dense(num_classes, activation='softmax', name="output")(x)
+    
     return Model(inputs=inputs, outputs=outputs)
+
 model = build_model(x_train.shape[1:], 2)
+print(x_train.shape[1:])    # (128, 862)
 
-print(x_train.shape[1:])
 model.summary()
-
-model.save('C:/nmb/nmb_data/h5/5s/0601/Conv2D_Conv1D_2.h5')
+'''
+model.save('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5')
 
 # 컴파일, 훈련
 op = Adadelta(lr=1e-2)
@@ -69,15 +76,15 @@ batch_size = 32
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/0601/Conv2D_Conv1D_2.h5'
+path = 'C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv2D_Conv1D_2.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv2D_Conv1D_2.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=32)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -125,9 +132,9 @@ def beepsound():
     sd.Beep(fr, du) # winsound.Beep(frequency, duration)
 
 beepsound()
-
-# loss : 0.06266
-# acc : 0.97797
-# 43개 여성 목소리 중 39개 정답
-# 42개 남성 목소리 중 42개 정답
-# 작업 시간 :  0:53:53.613291
+'''
+# loss : 0.05219
+# acc : 0.98018
+# 43개 여성 목소리 중 40개 정답
+# 42개 남성 목소리 중 41개 정답
+# 작업 시간 :  0:36:05.038693
