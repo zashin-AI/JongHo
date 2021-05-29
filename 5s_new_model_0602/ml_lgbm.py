@@ -6,10 +6,12 @@ import librosa
 import pickle
 import warnings
 warnings.filterwarnings('ignore')
+import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.model_selection import learning_curve
 
 from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import TensorBoard
@@ -39,18 +41,53 @@ model = LGBMClassifier(
     # learning_rate=0.01,
     metric = 'binary_logloss',
     objective='binary',
-    n_estimators=1000
+    n_estimators=1000,
+    # tree_method='gpu_hist'
 )
 
-tb = TensorBoard(log_dir='C:/study/graph/'+ start_time.strftime("%Y%m%d-%H%M%S") + "/",histogram_freq=0, write_graph=True, write_images=True)
+# tb = TensorBoard(log_dir='C:/study/graph/'+ start_time.strftime("%Y%m%d-%H%M%S") + "/",histogram_freq=0, write_graph=True, write_images=True)
 
-model.fit(x_train, y_train, callbacks=[tb])
+model.fit(x_train, y_train, verbose=1) #, callbacks=[tb])
+
+# accuracy
+train_sizes, train_scores_model, test_scores_model = \
+    learning_curve(model, x_train[:100], y_train[:100], train_sizes=np.linspace(0.1, 1.0, 10),
+                   scoring="accuracy", cv=8, shuffle=True, random_state=42)
+
+train_scores_mean = np.mean(train_scores_model, axis=1)
+train_scores_std = np.std(train_scores_model, axis=1)
+test_scores_mean = np.mean(test_scores_model, axis=1)
+test_scores_std = np.std(test_scores_model, axis=1)
+
+# log loss
+train_sizes, train_scores_model, test_scores_model = \
+    learning_curve(model, x_train[:100], y_train[:100], train_sizes=np.linspace(0.1, 1.0, 10),
+                   scoring='neg_log_loss', cv=8, shuffle=True, random_state=42)
+
+# accuracy
+plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+                 label="Training score")
+plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+                 label="validation score")
+
+# log loss
+plt.plot(train_sizes, -train_scores_model.mean(1), 'o-', color="r", label="log_loss")
+plt.plot(train_sizes, -test_scores_model.mean(1), 'o-', color="g", label="val log_loss")
+
+plt.xlabel("Train size")
+plt.ylabel("Log loss")
+plt.ylabel("Accuracy")
+plt.title('lgbm')
+plt.legend(loc="best")
+
+plt.show()
+
 
 # 가중치 저장
 pickle.dump(
     model,
     open(
-        'C:/nmb/nmb_data/h5/5s/lgbm/project_lgbm_estimators_1000(ss).data', 'wb')
+        'C:/nmb/nmb_data/h5/5s/lgbm/project_lgbm2_estimators_1000(ss).data', 'wb')
     )
 
 # 모델 평가
