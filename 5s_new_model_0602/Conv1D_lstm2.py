@@ -38,7 +38,7 @@ def residual_block(x, filters, conv_num=3, activation='relu'):  # ( input, outpu
     # Shortcut
     s = Conv1D(filters, 1, padding='same')(x)
     for i in range(conv_num - 1):
-        x = Conv1D(filters, 3, padding='same')(x)
+        x = LSTM(filters, return_sequences=True)(x)
         x = Activation(activation)(x)
     x = LSTM(filters)(x)
     x = Add()([x,s])
@@ -68,7 +68,7 @@ print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
 
-model.save('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5')
+model.save('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_2.h5')
 
 # 컴파일, 훈련
 op = Adadelta(lr=1e-2)
@@ -76,15 +76,15 @@ batch_size = 32
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_1.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_2.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv1D_lstm_2.h5')
 result = model.evaluate(x_test, y_test, batch_size=32)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
