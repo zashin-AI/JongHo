@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Dense, Conv2D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU, Conv1D, GRU
+from tensorflow.keras.layers import Dense, Conv2D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU, Conv1D, SimpleRNN
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
 from tensorflow.python.keras.layers.recurrent import RNN
@@ -39,9 +39,9 @@ def residual_block(x, filters, conv_num=3, activation='relu'):  # ( input, outpu
     # Shortcut
     s = Conv1D(filters, 1, padding='same')(x)
     for i in range(conv_num - 1):
-        x = GRU(filters, return_sequences=True)(x)
+        x = Conv1D(filters, 3, padding='same')(x)
         x = Activation(activation)(x)
-    x = GRU(filters)(x)
+    x = SimpleRNN(filters)(x)
     x = Add()([x,s])
     x = Activation(activation)(x)
     return MaxPool1D(pool_size=2, strides=1)(x)
@@ -68,8 +68,8 @@ model = build_model(x_train.shape[1:], 2)
 print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
-
-model.save('C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_2.h5')
+'''
+model.save('C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_1.h5')
 
 # 컴파일, 훈련
 op = Adadelta(lr=1e-2)
@@ -77,15 +77,15 @@ batch_size = 32
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_2.h5'
+path = 'C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_1.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_2.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_2.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_1.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv1D_GRU_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=32)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
@@ -133,7 +133,7 @@ def beepsound():
     sd.Beep(fr, du) # winsound.Beep(frequency, duration)
 
 beepsound()
-
+'''
 # loss : 0.23320
 # acc : 0.90749
 # 43개 여성 목소리 중 39개 정답
