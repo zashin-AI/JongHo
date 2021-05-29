@@ -39,7 +39,7 @@ def residual_block(x, filters, conv_num=3, activation='relu'):  # ( input, outpu
     # Shortcut
     s = Conv1D(filters, 1, padding='same')(x)
     for i in range(conv_num - 1):
-        x = Conv1D(filters, 3, padding='same')(x)
+        x = SimpleRNN(filters, return_sequences=True)(x)
         x = Activation(activation)(x)
     x = SimpleRNN(filters)(x)
     x = Add()([x,s])
