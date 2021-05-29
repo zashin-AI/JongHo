@@ -50,33 +50,33 @@ model = LGBMClassifier(
 model.fit(x_train, y_train, verbose=1) #, callbacks=[tb])
 
 # accuracy
-train_sizes, train_scores_model, test_scores_model = \
-    learning_curve(model, x_train[:100], y_train[:100], train_sizes=np.linspace(0.1, 1.0, 10),
-                   scoring="accuracy", cv=8, shuffle=True, random_state=42, verbose=1)
-
-train_scores_mean = np.mean(train_scores_model, axis=1)
-train_scores_std = np.std(train_scores_model, axis=1)
-test_scores_mean = np.mean(test_scores_model, axis=1)
-test_scores_std = np.std(test_scores_model, axis=1)
-
-# log loss
 # train_sizes, train_scores_model, test_scores_model = \
 #     learning_curve(model, x_train[:100], y_train[:100], train_sizes=np.linspace(0.1, 1.0, 10),
-#                    scoring='neg_log_loss', cv=8, shuffle=True, random_state=42)
+#                    scoring="accuracy", cv=8, shuffle=True, random_state=42, verbose=1)
 
-# accuracy
-plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
-                 label="Training score")
-plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
-                 label="validation score")
+# train_scores_mean = np.mean(train_scores_model, axis=1)
+# train_scores_std = np.std(train_scores_model, axis=1)
+# test_scores_mean = np.mean(test_scores_model, axis=1)
+# test_scores_std = np.std(test_scores_model, axis=1)
 
 # log loss
-# plt.plot(train_sizes, -train_scores_model.mean(1), 'o-', color="r", label="log_loss")
-# plt.plot(train_sizes, -test_scores_model.mean(1), 'o-', color="g", label="val log_loss")
+train_sizes, train_scores_model, test_scores_model = \
+    learning_curve(model, x_train[:100], y_train[:100], train_sizes=np.linspace(0.1, 1.0, 10),
+                   scoring='neg_log_loss', cv=8, shuffle=True, random_state=42)
+
+# accuracy
+# plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+#                  label="Training score")
+# plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+#                  label="validation score")
+
+# log loss
+plt.plot(train_sizes, -train_scores_model.mean(1), 'o-', color="r", label="log_loss")
+plt.plot(train_sizes, -test_scores_model.mean(1), 'o-', color="g", label="val log_loss")
 
 plt.xlabel("Train size")
-# plt.ylabel("Log loss")
-plt.ylabel("Accuracy")
+plt.ylabel("Log loss")
+# plt.ylabel("Accuracy")
 plt.title('lgbm')
 plt.legend(loc="best")
 
@@ -136,3 +136,13 @@ for pred_audioPath in pred_list:
 print('43개의 여자 목소리 중 ' + str(count_f) + ' 개 정답')
 print('43개의 남자 목소리 중 ' + str(count_m) + ' 개 정답')
 print('time : ', datetime.datetime.now() - start_time)
+
+# [learning_curve] Training set sizes: [ 8 17 26 34 43 52 60 69 78 87]
+# [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+# [Parallel(n_jobs=1)]: Done  80 out of  80 | elapsed:  4.4min finished
+# StandardScaler()
+# acc :  0.9218061674008811
+# loss :  2.700745718019345
+# 43개의 여자 목소리 중 38 개 정답
+# 43개의 남자 목소리 중 39 개 정답
+# time :  1:01:42.737762
