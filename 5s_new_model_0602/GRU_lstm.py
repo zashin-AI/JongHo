@@ -122,7 +122,7 @@ for pred_pathAudio in pred:
             if name == 'M' :
                 count_m = count_m + 1
 print("43개 여성 목소리 중 "+str(count_f)+"개 정답")
-print("42개 남성 목소리 중 "+str(count_m)+"개 정답")
+print("43개 남성 목소리 중 "+str(count_m)+"개 정답")
 
 end = datetime.now()
 time = end - start
@@ -139,5 +139,5 @@ beepsound()
 # loss : 0.66383
 # acc : 0.61013
 # 43개 여성 목소리 중 36개 정답
-# 42개 남성 목소리 중 19개 정답
+# 43개 남성 목소리 중 19개 정답
 # 작업 시간 :  0:08:37.137735
