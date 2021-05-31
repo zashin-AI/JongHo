@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential, load_model, Model
-from tensorflow.keras.layers import Dense, Conv2D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU, Conv1D, SimpleRNN
+from tensorflow.keras.layers import Dense, Conv2D, MaxPool1D, AveragePooling1D, Dropout, Activation, Flatten, Add, Input, Concatenate, LeakyReLU, ReLU, GRU, LSTM, SimpleRNN
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.optimizers import Adadelta, Adam, Nadam, RMSprop
 from tensorflow.python.keras.layers.recurrent import RNN
@@ -32,19 +32,18 @@ print(x_train.shape, y_train.shape) # (3628, 128, 862) (3628,)
 print(x_test.shape, y_test.shape)   # (908, 128, 862) (908,)
 
 # 모델 구성
-
 model = Sequential()
 
-def residual_block(x, filters, conv_num=3, activation='relu'):  # ( input, output node, for 문 반복 횟수, activation )
+def residual_block(x, units, conv_num=3, activation='tanh'):  # ( input, output node, for 문 반복 횟수, activation )
     # Shortcut
-    s = Conv1D(filters, 1, padding='same')(x)
+    s = Dense(units)(x) 
     for i in range(conv_num - 1):
-        x = SimpleRNN(filters, return_sequences=True)(x)
+        x = GRU(units, return_sequences=True)(x) # return_sequences=True 이거 사용해서 lstm shape 부분 3차원으로 맞춰줌 -> 자세한 내용 찾아봐야함
         x = Activation(activation)(x)
-    x = SimpleRNN(filters)(x)
+    x = GRU(units)(x)
     x = Add()([x,s])
-    x = Activation(activation)(x)
-    return MaxPool1D(pool_size=2, strides=1)(x)
+    return Activation(activation)(x)
+    # return MaxPool1D(pool_size=2, strides=1)(x)
 
 def build_model(input_shape, num_classes):
     inputs = Input(shape=input_shape, name='input')
@@ -53,23 +52,26 @@ def build_model(input_shape, num_classes):
     x = residual_block(x, 32, 2)
     x = residual_block(x, 64, 3)
     x = residual_block(x, 128, 3)
-    x = residual_block(x, 128, 23)
+    x = residual_block(x, 128, 3)
+    
+    # Total params: 988,642
+    # Trainable params: 988,642
+    # Non-trainable params: 0
 
-    x = AveragePooling1D(pool_size=3, strides=3)(x)
-    x = Flatten()(x)
-    x = Dense(256, activation="relu")(x)
-    x = Dense(128, activation="relu")(x)
+    x = Bidirectional(GRU(16))(x)  #  LSTM 레이어 부분에 Bidirectional() 함수 -> many to one 유형
+    x = Dense(256, activation="tanh")(x)
+    x = Dense(128, activation="tanh")(x)
 
     outputs = Dense(num_classes, activation='softmax', name="output")(x)
     
     return Model(inputs=inputs, outputs=outputs)
 
-model = build_model(x_train.shape[1:], 2)
+model = build_model(x_train.shape[1:], 2) # lstm 사용할때는 1로 적용해서 softmax사용후 sparse_categorical_crossentropy 적용 -> 자세한 내용 찾아봐야함
 print(x_train.shape[1:])    # (128, 862)
 
 model.summary()
 
-model.save('C:/nmb/nmb_data/h5/5s/0601/Conv1D_SimpleRNN_1.h5')
+model.save('C:/nmb/nmb_data/h5/5s/0601/DNN_GRU_2.h5')
 
 # 컴파일, 훈련
 op = Adadelta(lr=1e-2)
@@ -77,15 +79,15 @@ batch_size = 32
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
 lr = ReduceLROnPlateau(monitor='val_loss', vactor=0.5, patience=10, verbose=1)
-path = 'C:/nmb/nmb_data/h5/5s/0601/Conv1D_SimpleRNN_1.h5'
+path = 'C:/nmb/nmb_data/h5/5s/0601/DNN_GRU_2.h5'
 mc = ModelCheckpoint(path, monitor='val_loss', verbose=1, save_best_only=True)
 
 model.compile(optimizer=op, loss="sparse_categorical_crossentropy", metrics=['acc'])
 history = model.fit(x_train, y_train, epochs=5000, batch_size=batch_size, validation_split=0.2, callbacks=[es, lr, mc])
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/0601/Conv1D_SimpleRNN_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/0601/Conv1D_SimpleRNN_1.h5')
+# model = load_model('C:/nmb/nmb_data/h5/5s/0601/DNN_GRU_2.h5')
+model.load_weights('C:/nmb/nmb_data/h5/5s/0601/DNN_GRU_2.h5')
 result = model.evaluate(x_test, y_test, batch_size=32)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
