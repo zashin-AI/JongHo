@@ -22,7 +22,7 @@ filelist = ['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10']
 for name in filelist : 
     filename = name
 
-    path_wav = 'C:/nmb/nmb_data/pansori/pansori_f_2m/' + filename
+    path_wav = 'C:/nmb/nmb_data/pansori/pansori_female/' + filename
     path_out = 'C:/nmb/nmb_data/pansori total/' + filename + '.wav'
     voice_sum(form='wav', audio_dir=path_wav, save_dir=None, out_dir=path_out)
 
