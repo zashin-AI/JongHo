@@ -101,8 +101,8 @@ history = model.fit(x_train, y_train, epochs=300, batch_size=16, validation_spli
 model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_adadelta_1.h5')
 
 # 평가, 예측
-# model = load_model('C:/nmb/nmb_data/h5/5s/DNN_adadelta_1.h5')
-model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_adadelta_1.h5')
+model = load_model('C:/nmb/nmb_data/h5/5s/DNN_adadelta_1.h5')
+# model.load_weights('C:/nmb/nmb_data/h5/5s/DNN_adadelta_1.h5')
 result = model.evaluate(x_test, y_test, batch_size=8)
 print("loss : {:.5f}".format(result[0]))
 print("acc : {:.5f}".format(result[1]))
