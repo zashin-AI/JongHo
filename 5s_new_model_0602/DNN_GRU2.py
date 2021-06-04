@@ -74,7 +74,7 @@ model.summary()
 model.save('C:/nmb/nmb_data/h5/5s/0601/DNN_GRU_2.h5')
 
 # 컴파일, 훈련
-op = Adadelta(lr=1e-2)
+op = Adadelta(lr=1e-3)
 batch_size = 32
 
 es = EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1)
